@@ -3,7 +3,7 @@
 <table>
 <tr align="center">
 <td>Path</td>
-<td>JP</td>
+<td>JA</td>
 <td>EN</td>
 </tr><tr></tr>
 <tr></tr><tr>

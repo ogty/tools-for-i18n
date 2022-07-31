@@ -149,14 +149,16 @@ class LanguageSegmenter:
             """
             for key, value in data.items():
                 if LanguageSegmenter.base_language in value:
-                    LanguageSegmenter.breadcrumb_list.append(f"{parent}.{key}")
+                    LanguageSegmenter.breadcrumb_list.append(key if parent is None else f"{parent}.{key}")
                 else:
                     path = key if parent is None else f"{parent}.{key}"
                     self.generate_breadcrumb_list(value, parent=path)
 
 
 if __name__ == "__main__":
-    languages = ["jp", "en"]
+    languages = ["ja", "en"]
+    # segmenter = LanguageSegmenter(import_file_name="./sample/public/locales/sample.yaml", languages=languages)
     segmenter = LanguageSegmenter(import_file_name="./sample.yaml", languages=languages)
+    # segmenter.write("./sample/public/locales")
     segmenter.write("./public/locales")
-    segmenter.output_table(languages) # $ python3 main.py >> README.md
+    segmenter.output_table(languages)
