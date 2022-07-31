@@ -6,13 +6,34 @@ import yaml
 
 
 class LanguageSegmenter:
+    """Segment translation files by language
+
+    Variables:
+        base_data (dict): Base translation data
+        base_language (str): Base language
+        segmented_data (dict): Segmented translation data
+        breadcrumb_list (list): Breadcrumb list
+
+    Returns:
+        _type_: _description_
+    """
 
     base_data = {}
+
     base_language = ""
+
     segmented_data = {}
+
     breadcrumb_list = []
 
     def __init__(self, import_file_name: str, languages: List[str], base_language: str = None) -> None:
+        """Initialization handles file loading and segmenting
+
+        Args:
+            import_file_name (str): Used to read yaml file
+            languages (List[str]): Selection of the language described in the yaml file
+            base_language (str, optional): Most reliable language. Defaults to None.
+        """
         self.languages = languages
         LanguageSegmenter.base_language = languages[0] if base_language is None else base_language
         with open(import_file_name, "r", encoding="utf-8") as f:
@@ -22,6 +43,11 @@ class LanguageSegmenter:
         self.BreadcrumbListGenerator()
 
     def write(self, path: str) -> None:
+        """Output internationalization-compliant files.
+
+        Args:
+            path (str): Path to the location to be created
+        """
         for language in self.languages:
             locales_path = os.path.join(path, language)
             os.makedirs(locales_path, exist_ok=True)
@@ -34,11 +60,26 @@ class LanguageSegmenter:
                 )
 
     def get_value(self, path: str, data: Dict[str, any], language: str) -> any:
+        """Function to get data from a string connected by dots
+
+        Args:
+            path (str): Paths connected by dots
+            data (Dict[str, any]): Data traced by the path
+            language (str): Languages to be retrieved from data
+
+        Returns:
+            any: It is the type of data for the translation.
+        """
         for key in path.split("."):
             data = data[key]
         return data[language]
     
     def output_table(self, language: str) -> None:
+        """_summary_
+
+        Args:
+            language (str): Languages to be retrieved from data
+        """
         # TODO
         print("<table>")
         for path in LanguageSegmenter.breadcrumb_list:
@@ -52,15 +93,31 @@ class LanguageSegmenter:
         print("</table>")
     
     class Processer:
+        """
+        Class containing recursive functions for language-specific segmenting
+        """
 
         def __init__(self, language: str):
+            """Executed at initialization. Result reflects class variables of parent class.
+
+            Args:
+                language (str): Specify a single language
+            """
             self.language = language
             self.result = {}
 
             self.segmenter(LanguageSegmenter.base_data)
             LanguageSegmenter.segmented_data[self.language] = self.result
 
-        def segmenter(self, translation_data: Dict[str, dict]) -> Dict[str, any]:
+        def segmenter(self, translation_data: Dict[str, any]) -> Dict[str, any]:
+            """Recursive functions for segmenting translation data
+
+            Args:
+                translation_data (Dict[str, any]): key, value in value data
+
+            Returns:
+                Dict[str, any]: Elements of translation data
+            """
             element = {}
             for key, value in translation_data.items():
                 if self.language in value:
@@ -72,11 +129,22 @@ class LanguageSegmenter:
             return element
 
     class BreadcrumbListGenerator:
+        """
+        Class containing recursive functions for breadcrumb list creation
+        """
 
         def __init__(self) -> None:
+            """_summary_
+            """
             self.generate_breadcrumb_list(LanguageSegmenter.base_data)
 
-        def generate_breadcrumb_list(self, data: Dict[str, dict], parent: str = None) -> None:
+        def generate_breadcrumb_list(self, data: Dict[str, any], parent: str = None) -> None:
+            """Create breadcrumb list at initialization
+
+            Args:
+                data (Dict[str, any]): key, value in value data
+                parent (str, optional): Route information up to now. Defaults to None.
+            """
             for key, value in data.items():
                 if LanguageSegmenter.base_language in value:
                     LanguageSegmenter.breadcrumb_list.append(f"{parent}.{key}")
@@ -88,4 +156,4 @@ class LanguageSegmenter:
 if __name__ == "__main__":
     segmenter = LanguageSegmenter(import_file_name="./sample.yaml", languages=["jp", "en"])
     segmenter.write("./public/locales")
-    segmenter.output_table("en") # $ python3 main.py >> README.md
+    segmenter.output_table("en") # $ python3 main.py > README.md
