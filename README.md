@@ -1,7 +1,12 @@
 <h1 align="center">🌐 Tools for Internationalization 🌐</h1>
 
 <table>
-<tr></tr><tr>
+<tr>
+<td>Path</td>
+<td>EN</td>
+<td>JP</td>
+</tr>
+<tr></tr><tr></tr><tr>
 <td>
 
 ```
@@ -16,6 +21,15 @@ header.title
 ```js
 
 "Title"
+
+```
+
+</td>
+<td>
+
+```js
+
+"タイトル"
 
 ```
 
@@ -51,6 +65,26 @@ header.items
 ```
 
 </td>
+<td>
+
+```js
+
+[
+    "ログイン",
+    "会員登録",
+    {
+        "企業情報": [
+            "ブログ",
+            "採用情報",
+            "会社紹介",
+            "ヘルプセンター"
+        ]
+    }
+]
+
+```
+
+</td>
 </tr>
 <tr></tr><tr>
 <td>
@@ -67,6 +101,15 @@ main.heroSentence
 ```js
 
 "Nothing great is made alone."
+
+```
+
+</td>
+<td>
+
+```js
+
+"一人ではすごいものは完成できない。"
 
 ```
 
@@ -90,6 +133,19 @@ main.firstLevelComponent.secondLevelComponent
     "Brainstorm",
     "Design",
     "Build"
+]
+
+```
+
+</td>
+<td>
+
+```js
+
+[
+    "ブレインストーミング",
+    "デザイン",
+    "ビルド"
 ]
 
 ```
