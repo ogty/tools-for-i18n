@@ -1,5 +1,9 @@
 <h1 align="center">🌐 Tools for Internationalization 🌐</h1>
 
+## 📝 TODO
+
+- [ ] Implement as a CLI command
+
 <table>
 <tr align="center">
 <td>Path</td>
