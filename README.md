@@ -1,4 +1,4 @@
-# Tools for Internationalization
+<h1 align="center">🌐 Tools for Internationalization 🌐</h1>
 
 <table>
 <tr></tr><tr>
