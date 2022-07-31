@@ -74,24 +74,29 @@ class LanguageSegmenter:
             data = data[key]
         return data[language]
     
-    def output_table(self, language: str) -> None:
-        """_summary_
+    def output_table(self, languages: List[str]) -> None:
+        """Outputs a translation table
 
         Args:
-            language (str): Languages to be retrieved from data
+            languages (List[str]): Selecting the language of output
         """
-        # TODO
         print("<table>")
+        print("<tr>\n<td>Path</td>\n<td>", end="")
+        print("</td>\n<td>".join(list(map(lambda language: language.upper(), languages))), end="")
+        print("</td>\n</tr><tr></tr>")
         for path in LanguageSegmenter.breadcrumb_list:
-            data = self.get_value(path, LanguageSegmenter.base_data, language)
-            if isinstance(data, str):
-                data = f'"{data}"'
-            else:
-                data = json.loads(str(data).replace("'", '"'))
-                data = json.dumps(data, indent=4, ensure_ascii=False)
-            print(f"<tr></tr><tr>\n<td>\n\n```\n\n{path}\n\n```\n\n</td>\n<td>\n\n```js\n\n{data}\n\n```\n\n</td>\n</tr>")
+            print(f"<tr></tr><tr>\n<td>\n\n```\n{path}\n```\n\n</td>\n")
+            for language in languages:
+                data = self.get_value(path, LanguageSegmenter.base_data, language)
+                if isinstance(data, str):
+                    data = f'"{data}"'
+                else:
+                    data = json.loads(str(data).replace("'", '"'))
+                    data = json.dumps(data, indent=2, ensure_ascii=False)
+                print(f"<td>\n\n```js\n{data}\n```\n\n</td>")
+            print("\n</tr>")
         print("</table>")
-    
+
     class Processer:
         """
         Class containing recursive functions for language-specific segmenting
@@ -155,5 +160,5 @@ class LanguageSegmenter:
 
 if __name__ == "__main__":
     segmenter = LanguageSegmenter(import_file_name="./sample.yaml", languages=["jp", "en"])
-    segmenter.write("./public/locales")
-    segmenter.output_table("en") # $ python3 main.py > README.md
+    # segmenter.write("./public/locales")
+    segmenter.output_table(["jp", "en"]) # $ python3 main.py > README.md
