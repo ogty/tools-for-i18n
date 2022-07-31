@@ -88,4 +88,4 @@ class LanguageSegmenter:
 if __name__ == "__main__":
     segmenter = LanguageSegmenter(import_file_name="./sample.yaml", languages=["jp", "en"])
     segmenter.write("./public/locales")
-    segmenter.output_table("jp") # $ python3 main.py >> README.md
+    segmenter.output_table("en") # $ python3 main.py >> README.md

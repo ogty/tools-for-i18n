@@ -15,7 +15,7 @@ header.title
 
 ```js
 
-"タイトル"
+"Title"
 
 ```
 
@@ -36,14 +36,14 @@ header.items
 ```js
 
 [
-    "ログイン",
-    "会員登録",
+    "Log in",
+    "Sign up",
     {
-        "企業情報": [
-            "ブログ",
-            "採用情報",
-            "会社紹介",
-            "ヘルプセンター"
+        "Company": [
+            "Blog",
+            "Careers",
+            "Our story",
+            "Help Center"
         ]
     }
 ]
@@ -66,7 +66,7 @@ main.heroSentence
 
 ```js
 
-"一人ではすごいものは完成できない。"
+"Nothing great is made alone."
 
 ```
 
@@ -87,9 +87,9 @@ main.firstLevelComponent.secondLevelComponent
 ```js
 
 [
-    "ブレインストーミング",
-    "デザイン",
-    "ビルド"
+    "Brainstorm",
+    "Design",
+    "Build"
 ]
 
 ```
