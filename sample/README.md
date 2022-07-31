@@ -3,6 +3,8 @@
 ## Create app and install package
 
 ```zsh
+$ pwd
+.../tools-for-internationalization
 $ npx create-react-app sample --template typescript
 $ cd sample
 $ npm install react-i18next i18next i18next-http-backend --save
