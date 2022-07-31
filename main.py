@@ -13,9 +13,6 @@ class LanguageSegmenter:
         base_language (str): Base language
         segmented_data (dict): Segmented translation data
         breadcrumb_list (list): Breadcrumb list
-
-    Returns:
-        _type_: _description_
     """
 
     base_data = {}
@@ -81,7 +78,7 @@ class LanguageSegmenter:
             languages (List[str]): Selecting the language of output
         """
         print("<table>")
-        print("<tr>\n<td>Path</td>\n<td>", end="")
+        print('<tr align="center">\n<td>Path</td>\n<td>', end="")
         print("</td>\n<td>".join(list(map(lambda language: language.upper(), languages))), end="")
         print("</td>\n</tr><tr></tr>")
         for path in LanguageSegmenter.breadcrumb_list:
@@ -159,6 +156,7 @@ class LanguageSegmenter:
 
 
 if __name__ == "__main__":
-    segmenter = LanguageSegmenter(import_file_name="./sample.yaml", languages=["jp", "en"])
-    # segmenter.write("./public/locales")
-    segmenter.output_table(["jp", "en"]) # $ python3 main.py > README.md
+    languages = ["jp", "en"]
+    segmenter = LanguageSegmenter(import_file_name="./sample.yaml", languages=languages)
+    segmenter.write("./public/locales")
+    segmenter.output_table(languages) # $ python3 main.py >> README.md

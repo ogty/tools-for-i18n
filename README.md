@@ -1,7 +1,7 @@
 <h1 align="center">🌐 Tools for Internationalization 🌐</h1>
 
 <table>
-<tr>
+<tr align="center">
 <td>Path</td>
 <td>JP</td>
 <td>EN</td>
