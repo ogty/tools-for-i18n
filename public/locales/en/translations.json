@@ -1,0 +1,27 @@
+{
+    "header": {
+        "title": "Title",
+        "items": [
+            "Log in",
+            "Sign up",
+            {
+                "Company": [
+                    "Blog",
+                    "Careers",
+                    "Our story",
+                    "Help Center"
+                ]
+            }
+        ]
+    },
+    "main": {
+        "heroSentence": "Nothing great is made alone.",
+        "firstLevelComponent": {
+            "secondLevelComponent": [
+                "Brainstorm",
+                "Design",
+                "Build"
+            ]
+        }
+    }
+}

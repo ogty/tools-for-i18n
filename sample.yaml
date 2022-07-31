@@ -1,0 +1,42 @@
+header:
+  title:
+    jp: タイトル
+    en: Title
+  items:
+    jp: [
+      "ログイン",
+      "会員登録",
+      "企業情報": [
+       "ブログ",
+       "採用情報",
+       "会社紹介" ,
+       "ヘルプセンター",
+      ]
+    ]
+    en: [
+      "Log in",
+      "Sign up",
+      "Company": [
+        "Blog",
+        "Careers",
+        "Our story",
+        "Help Center",
+      ]
+    ]
+
+main:
+  heroSentence:
+    jp: "一人ではすごいものは完成できない。"
+    en: "Nothing great is made alone."
+  firstLevelComponent:
+    secondLevelComponent:
+      jp: [
+        "ブレインストーミング",
+        "デザイン",
+        "ビルド",
+      ]
+      en: [
+        "Brainstorm",
+        "Design",
+        "Build",
+      ]
