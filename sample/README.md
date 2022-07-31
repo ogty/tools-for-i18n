@@ -1,46 +1,129 @@
-# Getting Started with Create React App
+# Sample App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Create app and install package
 
-## Available Scripts
+```zsh
+$ npx create-react-app sample --template typescript
+$ cd sample
+$ npm install react-i18next i18next i18next-http-backend --save
+$ npm start
+```
 
-In the project directory, you can run:
+**sample/src/i18n.ts**
 
-### `npm start`
+```ts
+import i18n from 'i18next';
+import Backend from 'i18next-http-backend';
+import { initReactI18next } from 'react-i18next';
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+i18n
+  .use(Backend)
+  .use(initReactI18next)
+  .init({
+    ns: ['translations'],
+    fallbackLng: window.navigator.language.split('-')[0],
+    defaultNS: 'translations',
+    debug: false,
+    interpolation: {
+      escapeValue: false,
+    },
+  });
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+export default i18n;
+```
 
-### `npm test`
+> **Note**  
+> Internationalization support can be confirmed by changing the language from the browser settings.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+**sample/src/index.tsx**
 
-### `npm run build`
+```diff
+  ...
+  import App from './App';
+  import reportWebVitals from './reportWebVitals';
++ import './i18n';
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+  const root = ReactDOM.createRoot(
+    document.getElementById('root') as HTMLElement
+  );
+  ...
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+**sample/src/App.tsx**
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```ts
+import './App.css';
+import { useTranslation } from "react-i18next";
 
-### `npm run eject`
+function App() {
+  const { t } = useTranslation();
+  return <h1>{t("hello")}</h1>;
+}
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+export default App;
+```
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Creation of data for internationalization
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+**sample/public/locales/sample.yaml**
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```yaml
+hello:
+  ja: "こんにちは世界"
+  en: "Hello, world!"
+```
 
-## Learn More
+**tools-for-internationalization/main.py**
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```python
+...
+if __name__ == "__main__":
+    languages = ["ja", "en"]
+    segmenter = LanguageSegmenter(
+        import_file_name="./sample/public/locales/sample.yaml",
+        languages=languages
+    )
+    segmenter.write("./sample/public/locales")
+    segmenter.output_table(languages)
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Execute program
+
+```zsh
+$ python3 main.py
+```
+
+### Execution Result
+
+<table>
+<tr align="center">
+<td>Path</td>
+<td>JA</td>
+<td>EN</td>
+</tr><tr></tr>
+<tr></tr><tr>
+<td>
+
+```
+hello
+```
+
+</td>
+
+<td>
+
+```js
+"こんにちは世界"
+```
+
+</td>
+<td>
+
+```js
+"Hello, world!"
+```
+
+</td>
+
+</tr>
+</table>

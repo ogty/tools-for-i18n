@@ -157,8 +157,8 @@ class LanguageSegmenter:
 
 if __name__ == "__main__":
     languages = ["ja", "en"]
-    # segmenter = LanguageSegmenter(import_file_name="./sample/public/locales/sample.yaml", languages=languages)
-    segmenter = LanguageSegmenter(import_file_name="./sample.yaml", languages=languages)
-    # segmenter.write("./sample/public/locales")
-    segmenter.write("./public/locales")
+    segmenter = LanguageSegmenter(import_file_name="./sample/public/locales/sample.yaml", languages=languages)
+    # segmenter = LanguageSegmenter(import_file_name="./sample.yaml", languages=languages)
+    segmenter.write("./sample/public/locales")
+    # segmenter.write("./public/locales")
     segmenter.output_table(languages)
