@@ -86,7 +86,7 @@ main:
       ]
 ```
 
-<p aling="center">↓</p>
+<p align="center">↓</p>
 
 <table>
 <tr align="center">
