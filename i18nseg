@@ -4,6 +4,8 @@ import argparse
 from io import StringIO
 import json
 import os
+import re
+import string
 import sys
 from typing import Dict, List
 
@@ -82,14 +84,16 @@ class LanguageSegmenter:
             data = data[key]
         return data[language]
     
-    def output_table(self, languages: List[str], file_name: str = None) -> None:
+    def output_table(self, languages: List[str], file_name: str = None, empty: bool = False) -> None:
         """Outputs a translation table
 
         Args:
             languages (List[str]): Selecting the language of output
         """
-        io = StringIO()
+        if empty:
+            languages += ["EMPTY"]
 
+        io = StringIO()
         column_string = "</td><td>".join(list(map(lambda x: x.upper(), languages)))
         template = TABLE_TEMPLATE.replace("---", column_string, 1)
 
@@ -97,9 +101,27 @@ class LanguageSegmenter:
         for path in LanguageSegmenter.breadcrumb_list:
             html_data_string += f"<tr></tr><tr><td>\n\n```\n{path}\n```\n\n</td>"
             for language in languages:
-                data = self.get_value(path, LanguageSegmenter.base_data, language)
+                data = self.get_value(
+                    path=path,
+                    data=LanguageSegmenter.base_data,
+                    language=languages[0] if language == "EMPTY" else language
+                )
                 json.dump(obj=data, fp=io, indent=4, ensure_ascii=False)
-                html_data_string += f"<td>\n\n```js\n{io.getvalue()}\n```\n\n</td>"
+                string_data = io.getvalue()
+
+                if language == "EMPTY":
+                    if not isinstance(data, str):
+                        splited_string_data = string_data.split("\n")
+                        for line in splited_string_data:
+                            match = re.search(r'"(.*)"', line)
+                            if not match is None:
+                                string_data = string_data.replace(match.group(1), "")
+                    else:
+                        match = re.search(r'"(.*)"', string_data)
+                        if not match is None:
+                            string_data = string_data.replace(match.group(1), "")
+
+                html_data_string += f"<td>\n\n```js\n{string_data}\n```\n\n</td>"
                 io.truncate(0)
                 io.seek(0)
 
@@ -187,6 +209,7 @@ if __name__ == "__main__":
     parser.add_argument("--output", "-o", type=str, help="Path to the output directory")
     parser.add_argument("--table", "-t", action="store_true", help="Output translation table")
     parser.add_argument("--file_name", "-n", type=str, help="Output file name")
+    parser.add_argument("--empty", "-e", action="store_true", help="Output empty translation")
     args = parser.parse_args()
 
     if args.file is None:
@@ -203,7 +226,6 @@ if __name__ == "__main__":
         languages=args.languages,
         base_language=base_language,
     )
-    segmenter.output_table(args.languages)
 
     if args.output:
         segmenter.write(args.output)
@@ -212,4 +234,5 @@ if __name__ == "__main__":
         segmenter.output_table(
             languages=args.languages,
             file_name=None if args.file_name is None else args.file_name,
+            empty=False if args.empty is None else True,
         )

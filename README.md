@@ -41,140 +41,145 @@ $ i18nseg --file ./sample/i18n.yaml --languages ja en --output ./sample/public/l
 
 ## 🖨️ Output
 
-<table>
-<tr align="center">
-<td>Path</td>
-<td>JA</td>
-<td>EN</td>
-</tr><tr></tr>
-<tr></tr><tr>
-<td>
+<table><tr><td>Path</td><td>JA</td><td>EN</td><td>EMPTY</td></tr><tr></tr><tr></tr><tr><td>
 
 ```
 header.title
 ```
 
-</td>
-
-<td>
+</td><td>
 
 ```js
 "タイトル"
 ```
 
-</td>
-<td>
+</td><td>
 
 ```js
 "Title"
 ```
 
-</td>
+</td><td>
 
-</tr>
-<tr></tr><tr>
-<td>
+```js
+""
+```
+
+</td></tr><tr></tr><tr><td>
 
 ```
 header.items
 ```
 
-</td>
-
-<td>
+</td><td>
 
 ```js
 [
-  "ログイン",
-  "会員登録",
-  {
-    "企業情報": [
-      "ブログ",
-      "採用情報",
-      "会社紹介",
-      "ヘルプセンター"
-    ]
-  }
+    "ログイン",
+    "会員登録",
+    {
+        "企業情報": [
+            "ブログ",
+            "採用情報",
+            "会社紹介",
+            "ヘルプセンター"
+        ]
+    }
 ]
 ```
 
-</td>
-<td>
+</td><td>
 
 ```js
 [
-  "Log in",
-  "Sign up",
-  {
-    "Company": [
-      "Blog",
-      "Careers",
-      "Our story",
-      "Help Center"
-    ]
-  }
+    "Log in",
+    "Sign up",
+    {
+        "Company": [
+            "Blog",
+            "Careers",
+            "Our story",
+            "Help Center"
+        ]
+    }
 ]
 ```
 
-</td>
+</td><td>
 
-</tr>
-<tr></tr><tr>
-<td>
+```js
+[
+    "",
+    "",
+    {
+        "": [
+            "",
+            "",
+            "",
+            ""
+        ]
+    }
+]
+```
+
+</td></tr><tr></tr><tr><td>
 
 ```
 main.heroSentence
 ```
 
-</td>
-
-<td>
+</td><td>
 
 ```js
 "一人ではすごいものは完成できない。"
 ```
 
-</td>
-<td>
+</td><td>
 
 ```js
 "Nothing great is made alone."
 ```
 
-</td>
+</td><td>
 
-</tr>
-<tr></tr><tr>
-<td>
+```js
+""
+```
+
+</td></tr><tr></tr><tr><td>
 
 ```
 main.firstLevelComponent.secondLevelComponent
 ```
 
-</td>
-
-<td>
+</td><td>
 
 ```js
 [
-  "ブレインストーミング",
-  "デザイン",
-  "ビルド"
+    "ブレインストーミング",
+    "デザイン",
+    "ビルド"
 ]
 ```
 
-</td>
-<td>
+</td><td>
 
 ```js
 [
-  "Brainstorm",
-  "Design",
-  "Build"
+    "Brainstorm",
+    "Design",
+    "Build"
 ]
 ```
 
-</td>
+</td><td>
 
-</tr>
-</table>
+```js
+[
+    "",
+    "",
+    ""
+]
+```
+
+</td></tr></table>
