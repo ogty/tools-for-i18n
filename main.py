@@ -72,7 +72,7 @@ class LanguageSegmenter:
             data = data[key]
         return data[language]
     
-    def output_table(self, languages: List[str]) -> None:
+    def output_table(self, languages: List[str], file_name: str = None) -> None:
         """Outputs a translation table
 
         Args:
@@ -80,24 +80,29 @@ class LanguageSegmenter:
         """
         io = StringIO()
 
-        print("<table>")
-        print('<tr align="center">\n<td>Path</td>\n<td>', end="")
-        print("</td>\n<td>".join(list(map(lambda language: language.upper(), languages))), end="")
-        print("</td>\n</tr><tr></tr>")
+        template = '<table><tr><td>Path</td><td>---</td></tr><tr></tr>---</table>'
+        column_string = "</td><td>".join(list(map(lambda x: x.upper(), languages)))
+        template = template.replace("---", column_string, 1)
+
+        html_data_string = ""
         for path in LanguageSegmenter.breadcrumb_list:
-            print(f"<tr></tr><tr>\n<td>\n\n```\n{path}\n```\n\n</td>\n")
+            html_data_string += f"<tr></tr><tr><td>\n\n```\n{path}\n```\n\n</td>"
             for language in languages:
-                json.dump(
-                    self.get_value(path, LanguageSegmenter.base_data, language),
-                    io,
-                    indent=4,
-                    ensure_ascii=False
-                )
-                string_data = io.getvalue()
-                print(f"<td>\n\n```js\n{string_data}\n```\n\n</td>")
+                data = self.get_value(path, LanguageSegmenter.base_data, language)
+                json.dump(obj=data, fp=io, indent=4, ensure_ascii=False)
+                html_data_string += f"<td>\n\n```js\n{io.getvalue()}\n```\n\n</td>"
                 io.truncate(0)
-            print("\n</tr>")
-        print("</table>")
+                io.seek(0)
+
+            html_data_string += "</tr>"
+
+        result = template.replace("---", html_data_string)
+        print(result)
+        io.close()
+
+        if file_name is not None:
+            with open(file_name, "w", encoding="utf-8") as f:
+                f.write(result)
 
     class Processer:
         """
