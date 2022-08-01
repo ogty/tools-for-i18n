@@ -1,3 +1,4 @@
+from io import StringIO
 import json
 import os
 from typing import Dict, List
@@ -77,6 +78,8 @@ class LanguageSegmenter:
         Args:
             languages (List[str]): Selecting the language of output
         """
+        io = StringIO()
+
         print("<table>")
         print('<tr align="center">\n<td>Path</td>\n<td>', end="")
         print("</td>\n<td>".join(list(map(lambda language: language.upper(), languages))), end="")
@@ -84,13 +87,15 @@ class LanguageSegmenter:
         for path in LanguageSegmenter.breadcrumb_list:
             print(f"<tr></tr><tr>\n<td>\n\n```\n{path}\n```\n\n</td>\n")
             for language in languages:
-                data = self.get_value(path, LanguageSegmenter.base_data, language)
-                if isinstance(data, str):
-                    data = f'"{data}"'
-                else:
-                    data = json.loads(str(data).replace("'", '"'))
-                    data = json.dumps(data, indent=2, ensure_ascii=False)
-                print(f"<td>\n\n```js\n{data}\n```\n\n</td>")
+                json.dump(
+                    self.get_value(path, LanguageSegmenter.base_data, language),
+                    io,
+                    indent=4,
+                    ensure_ascii=False
+                )
+                string_data = io.getvalue()
+                print(f"<td>\n\n```js\n{string_data}\n```\n\n</td>")
+                io.truncate(0)
             print("\n</tr>")
         print("</table>")
 
@@ -157,8 +162,8 @@ class LanguageSegmenter:
 
 if __name__ == "__main__":
     languages = ["ja", "en"]
-    segmenter = LanguageSegmenter(import_file_name="./sample/public/locales/sample.yaml", languages=languages)
-    # segmenter = LanguageSegmenter(import_file_name="./sample.yaml", languages=languages)
-    segmenter.write("./sample/public/locales")
+    # segmenter = LanguageSegmenter(import_file_name="./sample/public/locales/sample.yaml", languages=languages)
+    segmenter = LanguageSegmenter(import_file_name="./sample.yaml", languages=languages)
+    # segmenter.write("./sample/public/locales")
     # segmenter.write("./public/locales")
     segmenter.output_table(languages)
