@@ -1,9 +1,18 @@
+#!/usr/bin/env python3
+
+import argparse
 from io import StringIO
 import json
 import os
 from typing import Dict, List
 
 import yaml
+
+from settings import (
+    EXPORT_FILE_NAME,
+    TABLE_TEMPLATE,
+    HELP_MESSAGE,
+)
 
 
 class LanguageSegmenter:
@@ -24,7 +33,7 @@ class LanguageSegmenter:
 
     breadcrumb_list = []
 
-    def __init__(self, import_file_name: str, languages: List[str], base_language: str = None) -> None:
+    def __init__(self, import_file_name: str, languages: List[str], base_language: str) -> None:
         """Initialization handles file loading and segmenting
 
         Args:
@@ -33,7 +42,7 @@ class LanguageSegmenter:
             base_language (str, optional): Most reliable language. Defaults to None.
         """
         self.languages = languages
-        LanguageSegmenter.base_language = languages[0] if base_language is None else base_language
+        LanguageSegmenter.base_language = base_language
         with open(import_file_name, "r", encoding="utf-8") as f:
             LanguageSegmenter.base_data = yaml.safe_load(f)
 
@@ -49,7 +58,7 @@ class LanguageSegmenter:
         for language in self.languages:
             locales_path = os.path.join(path, language)
             os.makedirs(locales_path, exist_ok=True)
-            with open(os.path.join(locales_path, "translations.json"), "w") as f:
+            with open(os.path.join(locales_path, EXPORT_FILE_NAME), "w") as f:
                 json.dump(
                     fp=f,
                     obj=LanguageSegmenter.segmented_data[language],
@@ -80,9 +89,8 @@ class LanguageSegmenter:
         """
         io = StringIO()
 
-        template = '<table><tr><td>Path</td><td>---</td></tr><tr></tr>---</table>'
         column_string = "</td><td>".join(list(map(lambda x: x.upper(), languages)))
-        template = template.replace("---", column_string, 1)
+        template = TABLE_TEMPLATE.replace("---", column_string, 1)
 
         html_data_string = ""
         for path in LanguageSegmenter.breadcrumb_list:
@@ -146,7 +154,8 @@ class LanguageSegmenter:
         """
 
         def __init__(self) -> None:
-            """_summary_
+            """
+            _sumInitialize and executemary_
             """
             self.generate_breadcrumb_list(LanguageSegmenter.base_data)
 
@@ -166,9 +175,41 @@ class LanguageSegmenter:
 
 
 if __name__ == "__main__":
-    languages = ["ja", "en"]
-    # segmenter = LanguageSegmenter(import_file_name="./sample/public/locales/sample.yaml", languages=languages)
-    segmenter = LanguageSegmenter(import_file_name="./sample.yaml", languages=languages)
-    # segmenter.write("./sample/public/locales")
-    # segmenter.write("./public/locales")
-    segmenter.output_table(languages)
+    parser = argparse.ArgumentParser(description="Segment translation files by language")
+    parser.add_argument("--file", "-f", type=str, help="Path to the translation file")
+    parser.add_argument("--languages", "-l", type=str, nargs="+", help="Languages to be segmented")
+    parser.add_argument("--base_language", "-b", type=str, help="Most reliable language")
+    parser.add_argument("--output", "-o", type=str, help="Path to the output directory")
+    parser.add_argument("--table", "-t", action="store_true", help="Output translation table")
+    parser.add_argument("--file_name", "-n", type=str, help="Output file name")
+    parser.add_argument("--help", "-h", action="store_true", help="Show help")
+    args = parser.parse_args()
+
+    if args.help:
+        print(HELP_MESSAGE)
+        exit(0)
+
+    if args.file is None:
+        print("Please specify a translation file")
+        exit(1)
+
+    if args.languages is None:
+        print("Please specify languages to be segmented")
+        exit(1)
+
+    base_language = args.languages[0] if args.base_language is None else args.base_language
+    segmenter = LanguageSegmenter(
+        import_file_name=args.file,
+        languages=args.languages,
+        base_language=base_language,
+    )
+    segmenter.output_table(args.languages)
+
+    if args.output:
+        segmenter.write(args.output)
+
+    if args.table:
+        segmenter.output_table(
+            languages=args.languages,
+            file_name=None if args.file_name is None else args.file_name,
+        )

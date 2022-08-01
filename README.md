@@ -1,8 +1,37 @@
 <h1 align="center">🌐 Tools for Internationalization 🌐</h1>
 
-## 📝 TODO
+## Setup
 
-- [ ] Implement as a CLI command
+```zsh
+$ git clone https://github.com/ogty/tools-for-internationalization
+$ chmod +x ./tools-for-internationalization/i18nseg
+$ ./i18nseg
+```
+
+## Usage and Options
+
+```
+Usage:
+    ./i18nseg [OPTIONS]
+
+Options:
+    -f, --file FILE
+                    Path to the translation file
+    -l, --languages LANGUAGE ...
+                    Languages to be segmented
+    -b, --base_language LANGUAGE
+                    Most reliable language
+    -o, --output DIRECTORY
+                    Path to the output directory
+    -t, --table
+                    Output translation table
+    -n, --file_name FILE
+                    Output file name
+    -h, --help
+                    Show this help message and exit
+```
+
+---
 
 <table>
 <tr align="center">
