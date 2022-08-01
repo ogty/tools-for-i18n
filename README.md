@@ -36,7 +36,7 @@ Options:
 ## ✏️ Example
 
 ```zsh
-$ i18nseg --file ./sample.yaml --languages ja en --output ./sample/public/locales --table
+$ i18nseg --file ./sample/i18n.yaml --languages ja en --output ./sample/public/locales --table
 ```
 
 ## 🖨️ Output
