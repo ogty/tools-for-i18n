@@ -27,6 +27,8 @@ Options:
                     Path to the output directory
     -t, --table
                     Output translation table
+    -e, --empty 
+                    Output empty translation
     -n, --file_name FILE
                     Output file name
     -h, --help
