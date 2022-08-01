@@ -41,53 +41,6 @@ $ i18nseg --file ./sample/i18n.yaml --languages ja en --output ./sample/public/l
 
 ## 🖨️ Output
 
-```yaml
-header:
-  title:
-    ja: タイトル
-    en: Title
-  items:
-    ja: [
-      "ログイン",
-      "会員登録",
-      "企業情報": [
-       "ブログ",
-       "採用情報",
-       "会社紹介" ,
-       "ヘルプセンター",
-      ]
-    ]
-    en: [
-      "Log in",
-      "Sign up",
-      "Company": [
-        "Blog",
-        "Careers",
-        "Our story",
-        "Help Center",
-      ]
-    ]
-
-main:
-  heroSentence:
-    ja: "一人ではすごいものは完成できない。"
-    en: "Nothing great is made alone."
-  firstLevelComponent:
-    secondLevelComponent:
-      ja: [
-        "ブレインストーミング",
-        "デザイン",
-        "ビルド",
-      ]
-      en: [
-        "Brainstorm",
-        "Design",
-        "Build",
-      ]
-```
-
-<p align="center">↓</p>
-
 <table>
 <tr align="center">
 <td>Path</td>
