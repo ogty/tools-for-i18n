@@ -176,7 +176,7 @@ class LanguageSegmenter:
 
 
 if __name__ == "__main__":
-    if sys.argv[1] == "--help":
+    if sys.argv[1] == "--help" or sys.argv[1] == "-h":
         print(HELP_MESSAGE)
         sys.exit(0)
 

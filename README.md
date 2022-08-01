@@ -1,4 +1,4 @@
-<h1 align="center">🌐 Tools for Internationalization 🌐</h1>
+<h1 align="center">Tools for Internationalization</h1>
 
 ## ⚙️ Setup
 
