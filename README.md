@@ -1,19 +1,21 @@
 <h1 align="center">🌐 Tools for Internationalization 🌐</h1>
 
-## Setup
+## ⚙️ Setup
 
 ```zsh
 $ git clone https://github.com/ogty/tools-for-internationalization
-$ chmod +x ./tools-for-internationalization/i18nseg
-$ ./i18nseg
+$ source ./tools-for-internationalization/setup.sh
 ```
 
-## Usage and Options
+## 📖 Usage
+
+```zsh
+$ i18nseg [OPTIONS]
+```
+
+## 🔍 Options
 
 ```
-Usage:
-    ./i18nseg [OPTIONS]
-
 Options:
     -f, --file FILE
                     Path to the translation file
@@ -31,7 +33,13 @@ Options:
                     Show this help message and exit
 ```
 
----
+## ✏️ Example
+
+```zsh
+$ i18nseg --file ./sample.yaml --languages ja en --table
+```
+
+## 🖨️ Output
 
 <table>
 <tr align="center">
