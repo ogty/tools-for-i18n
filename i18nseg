@@ -4,6 +4,7 @@ import argparse
 from io import StringIO
 import json
 import os
+import sys
 from typing import Dict, List
 
 import yaml
@@ -175,6 +176,10 @@ class LanguageSegmenter:
 
 
 if __name__ == "__main__":
+    if sys.argv[1] == "--help":
+        print(HELP_MESSAGE)
+        sys.exit(0)
+
     parser = argparse.ArgumentParser(description="Segment translation files by language")
     parser.add_argument("--file", "-f", type=str, help="Path to the translation file")
     parser.add_argument("--languages", "-l", type=str, nargs="+", help="Languages to be segmented")
@@ -182,12 +187,7 @@ if __name__ == "__main__":
     parser.add_argument("--output", "-o", type=str, help="Path to the output directory")
     parser.add_argument("--table", "-t", action="store_true", help="Output translation table")
     parser.add_argument("--file_name", "-n", type=str, help="Output file name")
-    parser.add_argument("--help", "-h", action="store_true", help="Show help")
     args = parser.parse_args()
-
-    if args.help:
-        print(HELP_MESSAGE)
-        exit(0)
 
     if args.file is None:
         print("Please specify a translation file")
