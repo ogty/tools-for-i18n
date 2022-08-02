@@ -5,7 +5,6 @@ from io import StringIO
 import json
 import os
 import re
-import string
 import sys
 from typing import Dict, List
 
@@ -171,7 +170,7 @@ class LanguageSegmenter:
             html_data_string += "</tr>"
 
         result = template.replace("---", html_data_string)
-        # print(result)
+        print(result)
         io.close()
 
         if file_name is not None:
