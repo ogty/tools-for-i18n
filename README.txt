@@ -22,9 +22,9 @@ $ source ./tools-for-internationalization/setup.sh # or make
 ## ✏️ Example
 
 ```
-$ i18nseg --file ./sample/i18n.yaml --languages ja en -t -e
+$ i18nseg --file ./sample/i18n.yaml --languages ja en --table --empty
 ```
 
 ## 🖨️ Output
 
-!i18nseg --file ./sample/i18n.yaml --languages ja en -t -e
+!i18nseg --file ./sample/i18n.yaml --languages ja en --table --empty
