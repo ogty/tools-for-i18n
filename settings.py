@@ -5,7 +5,6 @@ from typing import TypedDict
 INDENT = 4
 PARSER = argparse.ArgumentParser(description="Segment translation files by language")
 COMMAND_NAME = "i18nseg"
-HELP_MESSAGE = ''
 CHARACTER_CODE = "utf-8"
 TABLE_TEMPLATE = "<table><tr><td>Path</td><td>---</td></tr><tr></tr>---</table>"
 EMPTY_DATA_NAME = "EMPTY"
@@ -81,11 +80,12 @@ arguments = [
     )
 ]
 
-HELP_MESSAGE += f"Usage:\n\t{COMMAND_NAME} [OPTIONS]\n\nOptions:\n"
+USAGE = f"Usage:\n\t{COMMAND_NAME} [OPTIONS]\n"
+OPTIONS = "\nOptions:\n"
 for argument in arguments:
     long = argument["long"]
     short = argument["short"]
-    HELP_MESSAGE += "\t%s, %s %s\n\t\t\t\t\t%s\n" % (
+    OPTIONS += "\t%s, %s %s\n\t\t\t\t\t%s\n" % (
         short, long, argument["argument_name"], argument["help"]
     )
 
@@ -94,3 +94,5 @@ for argument in arguments:
     argument.pop("argument_name")
 
     PARSER.add_argument(long, short, **argument)
+
+HELP_MESSAGE = USAGE + OPTIONS
