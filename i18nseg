@@ -20,6 +20,12 @@ from settings import (
 )
 
 
+NC = "\033[0m"
+RED = "\033[1;31m"
+CYAN = "\033[1;36m"
+WHITE = "\033[1;37m"
+
+
 class LanguageSegmenter:
     """Segment translation files by language
 
@@ -212,9 +218,23 @@ class LanguageSegmenter:
             """
             self.language = language
             self.result = {}
+            self.before_key = ''
+            self.before_than_before = ''
+            self.error_count = 0
 
             self.segmenter(LanguageSegmenter.base_data)
             LanguageSegmenter.segmented_data[self.language] = self.result
+
+            if self.error_count > 0:
+                sys.exit(self.error_count)
+
+        def error(self, message: str) -> None:
+            """Function to output error message
+
+            Args:
+                message  (str): Error message
+            """
+            print("%sERROR%s: %s%s" % (RED, WHITE, message, NC), file=sys.stderr)
 
         def segmenter(self, translation_data: Dict[str, any]) -> Dict[str, any]:
             """Recursive functions for segmenting translation data
@@ -226,14 +246,27 @@ class LanguageSegmenter:
                 Dict[str, any]: Elements of translation data
             """
             element = {}
-            for key, value in translation_data.items():
-                if self.language in value:
-                    element[key] = value[self.language]
-                    continue
-                element[key] = self.segmenter(value)
+            try:
+                for key, value in translation_data.items():
+                    if self.language in value:
+                        element[key] = value[self.language]
+                        continue
 
-            self.result = element
-            return element
+                    if key not in ["ja", "en", "fr"]:
+                        self.before_key = key
+
+                    element[key] = self.segmenter(value)
+
+                self.result = element
+                return element
+            except AttributeError:
+                if self.before_key != self.before_than_before:
+                    error_message = 'The %s"%s"%s element of %s"%s"%s is missing.' % (
+                        CYAN, self.before_key, WHITE, CYAN, self.language, WHITE,
+                    )
+                    self.error(error_message)
+                    self.before_than_before = self.before_key
+                    self.error_count += 1
 
     class BreadcrumbListGenerator:
         """Class containing recursive functions for breadcrumb list creation"""
@@ -262,7 +295,6 @@ class LanguageSegmenter:
 if __name__ == "__main__":
     # TODO:
     # - [ ] Load config and make it available.
-    # - [ ] Raises an error when there is a missing element
     # - [ ] Create reverse generation options
     # - [ ] empty...
 
