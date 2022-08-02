@@ -2,6 +2,7 @@ import argparse
 
 EXPORT_FILE_NAME = "translations.json"
 EMPTY_DATA_NAME = "EMPTY"
+CHARACTER_CODE = "utf-8"
 TABLE_TEMPLATE = "<table><tr><td>Path</td><td>---</td></tr><tr></tr>---</table>"
 HELP_MESSAGE = """
 Usage:

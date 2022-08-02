@@ -9,7 +9,14 @@ from typing import Dict, List
 
 import yaml
 
-from settings import EXPORT_FILE_NAME, EMPTY_DATA_NAME, TABLE_TEMPLATE, HELP_MESSAGE, PARSER
+from settings import (
+    PARSER,
+    HELP_MESSAGE,
+    CHARACTER_CODE,
+    TABLE_TEMPLATE,
+    EMPTY_DATA_NAME,
+    EXPORT_FILE_NAME,
+)
 
 
 class LanguageSegmenter:
@@ -41,7 +48,7 @@ class LanguageSegmenter:
         LanguageSegmenter.base_language = self.base_language
 
         # Reads and assigns translation files
-        with open(import_file_name, "r", encoding="utf-8") as f:
+        with open(import_file_name, "r", encoding=CHARACTER_CODE) as f:
             LanguageSegmenter.base_data = yaml.safe_load(f)
 
         # Segment the translation data from the given Languages into their respective languages
@@ -82,7 +89,12 @@ class LanguageSegmenter:
         for string_breadcrumb_list, element_value in path_and_element_data:
             # When the argument language is specified, replace empty with that language
             if language is not None:
-                string_breadcrumb_list = re.sub(r"empty$", language, string_breadcrumb_list)
+                lowercase_empty_data_name = EMPTY_DATA_NAME.lower()
+                string_breadcrumb_list = re.sub(
+                    rf"{lowercase_empty_data_name}$",
+                    language,
+                    string_breadcrumb_list
+                )
 
             # Obtain the same point as "before".
             breadcrumb_list = string_breadcrumb_list.split(".")
@@ -111,7 +123,7 @@ class LanguageSegmenter:
 
         print(result)
         if file_name is not None:
-            with open(file_name, "w", encoding="utf-8") as f:
+            with open(file_name, "w", encoding=CHARACTER_CODE) as f:
                 f.write(result)
 
     def get_value(self, data: Dict[str, any], path: str, language: str) -> any:
@@ -186,7 +198,7 @@ class LanguageSegmenter:
         io.close()
 
         if file_name is not None:
-            with open(file_name, "w", encoding="utf-8") as f:
+            with open(file_name, "w", encoding=CHARACTER_CODE) as f:
                 f.write(result)
 
     class Processer:
@@ -260,11 +272,11 @@ if __name__ == "__main__":
 
     if args.file is None:
         print("Please specify a translation file")
-        exit(1)
+        sys.exit(1)
 
     if args.languages is None:
         print("Please specify languages to be segmented")
-        exit(1)
+        sys.exit(1)
 
     # Create an instance of LanguageSegmenter
     base_language = args.languages[0] if args.base_language is None else args.base_language
