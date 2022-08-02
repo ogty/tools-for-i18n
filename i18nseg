@@ -36,6 +36,8 @@ class LanguageSegmenter:
 
     breadcrumb_list = []
 
+    json_format_data = []
+
     def __init__(self, import_file_name: str, languages: List[str], base_language: str) -> None:
         """Initialization handles file loading and segmenting
 
@@ -68,6 +70,26 @@ class LanguageSegmenter:
                     indent=4,
                     ensure_ascii=False,
                 )
+
+    def reverse_generation(self) -> None:
+        before = []
+        for string_breadcrumb_list, element_value in LanguageSegmenter.json_format_data:
+            breadcrumb_list = string_breadcrumb_list.split(".")
+            breadcrumb_list_length = len(breadcrumb_list)
+            same_paths = list(set(before) & set(breadcrumb_list))
+            same_path_indexes = [breadcrumb_list.index(same_path) for same_path in same_paths]
+
+            for index, path in enumerate(breadcrumb_list):
+                if not index in same_path_indexes:
+                    string_indent = index * "  "
+
+                    if (breadcrumb_list_length - 1) == index:
+                        element_value = element_value.replace("\n", f"\n{string_indent}")
+                        print("%s%s: %s" % (string_indent, path, element_value))
+                    else:
+                        print("%s%s:" % (string_indent, path))
+
+            before = breadcrumb_list
 
     def get_value(self, path: str, data: Dict[str, any], language: str) -> any:
         """Function to get data from a string connected by dots
@@ -121,6 +143,8 @@ class LanguageSegmenter:
                         if not match is None:
                             string_data = string_data.replace(match.group(1), "")
 
+                LanguageSegmenter.json_format_data.append((f"{path}.{language.lower()}", string_data))
+
                 html_data_string += f"<td>\n\n```js\n{string_data}\n```\n\n</td>"
                 io.truncate(0)
                 io.seek(0)
@@ -128,7 +152,7 @@ class LanguageSegmenter:
             html_data_string += "</tr>"
 
         result = template.replace("---", html_data_string)
-        print(result)
+        # print(result)
         io.close()
 
         if file_name is not None:
@@ -236,3 +260,5 @@ if __name__ == "__main__":
             file_name=None if args.file_name is None else args.file_name,
             empty=False if args.empty is None else True,
         )
+
+    segmenter.reverse_generation()
