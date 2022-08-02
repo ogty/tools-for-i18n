@@ -22,9 +22,13 @@ Options:
 					Path to the translation file
 	-o, --output <DIRECTORY>
 					Path to the output directory
-	-n, --file_name <FILE>
+	-tf, --table_file <FILE>
 					Output file name
-	-b, --base_language <LANGUAGE>
+	-rf, --reverse_file <FILE>
+					Output file name
+	-rl, --reverse_language <LANGUAGE>
+					Language for empty data
+	-bl, --base_language <LANGUAGE>
 					Most reliable language
 	-l, --languages <LANGUAGE [...]>
 					Languages to be segmented
@@ -39,7 +43,8 @@ Options:
 ## ✏️ Example
 
 ```
-$ i18nseg --file ./sample/i18n.yaml --languages ja en -t -e
+$ i18nseg --file ./sample/i18n.yaml --languages ja en --table --empty
+$ i18nseg -f ./sample/i18n.yaml -l ja en -t -e -r -rl fr -rf ./sample/sample.yaml
 ```
 
 ## 🖨️ Output

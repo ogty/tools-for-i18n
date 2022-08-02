@@ -294,6 +294,7 @@ class LanguageSegmenter:
 
 if __name__ == "__main__":
     # TODO:
+    # - [ ] Implement segment, revgene and table commands
     # - [ ] Create reverse generation options
     # - [ ] empty...
 
@@ -326,11 +327,11 @@ if __name__ == "__main__":
         segmenter.output_table(
             empty=args.empty,
             languages=args.languages,
-            file_name=None if args.file_name is None else args.file_name,
+            file_name=None if args.table_file is None else args.table_file,
         )
 
     if args.reverse and args.table:
         segmenter.reverse_generation(
-            language="fr",
-            file_name="./sample.yaml",
+            language=args.reverse_language,
+            file_name=None if args.reverse_file is None else args.reverse_file,
         )
