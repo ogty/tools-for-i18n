@@ -91,13 +91,13 @@ class LanguageSegmenter:
 
             for index, path in enumerate(breadcrumb_list):
                 if not index in same_path_indexes:
-                    string_indent = index * "  "
+                    string_indent = index * "    "
 
                     if (breadcrumb_list_length - 1) == index:
                         element_value = element_value.replace("\n", f"\n{string_indent}")
-                        result += "%s%s: %s" % (string_indent, path, element_value)
+                        result += "%s%s: %s\n" % (string_indent, path, element_value)
                     else:
-                        result += "%s%s:" % (string_indent, path)
+                        result += "%s%s:\n" % (string_indent, path)
 
             before = breadcrumb_list
 
@@ -282,4 +282,7 @@ if __name__ == "__main__":
 
     # TODO: 
     if args.reverse:
-        segmenter.reverse_generation()
+        segmenter.reverse_generation(
+            language="fr", # TODO: 
+            file_name="./sample/sample.yaml",
+        )
