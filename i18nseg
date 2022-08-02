@@ -379,10 +379,9 @@ if __name__ == "__main__":
         segmenter.output_table(
             languages=args.languages,
             file_name=None if args.file_name is None else args.file_name,
-            empty=False if args.empty is None else True,
+            empty=args.empty,
         )
 
-    # TODO:
     if args.reverse:
         segmenter.reverse_generation(
             language="fr",
