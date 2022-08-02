@@ -242,6 +242,7 @@ class LanguageSegmenter:
 if __name__ == "__main__":
     # TODO: Load config and make it available.
     # TODO: Organize the code
+    # TODO: Raises an error when there is a missing element
     if sys.argv[1] == "--help" or sys.argv[1] == "-h":
         print(HELP_MESSAGE)
         sys.exit(0)
