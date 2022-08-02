@@ -253,6 +253,7 @@ if __name__ == "__main__":
     parser.add_argument("--table", "-t", action="store_true", help="Output translation table")
     parser.add_argument("--file_name", "-n", type=str, help="Output file name")
     parser.add_argument("--empty", "-e", action="store_true", help="Output empty translation")
+    parser.add_argument("--reverse", "-r", action="store_true", help="Reverse translation")
     args = parser.parse_args()
 
     if args.file is None:
@@ -280,4 +281,6 @@ if __name__ == "__main__":
             empty=False if args.empty is None else True,
         )
 
-    segmenter.reverse_generation()
+    # TODO: 
+    if args.reverse:
+        segmenter.reverse_generation()
