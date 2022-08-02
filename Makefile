@@ -6,3 +6,6 @@ usage:
 
 options:
 	@python3 -c "from settings import OPTIONS; print(OPTIONS)"
+
+update:
+	@awk -f ./update.awk README.txt > README.md

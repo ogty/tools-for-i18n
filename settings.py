@@ -24,35 +24,35 @@ arguments = [
     argument_type(
         long="--file",
         short="-f",
-        help="Path to the translation file",
+        help="Path to the translation file\n",
         type=str,
         argument_name="<FILE>",
     ),
     argument_type(
         long="--output",
         short="-o",
-        help="Path to the output directory",
+        help="Path to the output directory\n",
         type=str,
         argument_name="<DIRECTORY>",
     ),
     argument_type(
         long="--file_name",
         short="-n",
-        help="Output file name",
+        help="Output file name\n",
         type=str,
         argument_name="<FILE>",
     ),
     argument_type(
         long="--base_language",
         short="-b",
-        help="Most reliable language",
+        help="Most reliable language\n",
         type=str,
         argument_name="<LANGUAGE>",
     ),
     argument_type(
         long="--languages",
         short="-l",
-        help="Languages to be segmented",
+        help="Languages to be segmented\n",
         type=str,
         nargs="+",
         argument_name="<LANGUAGE [...]>",
@@ -60,14 +60,14 @@ arguments = [
     argument_type(
         long="--reverse",
         short="-r",
-        help="Reverse translation",
+        help="Reverse translation\n",
         action="store_true",
         argument_name="",
     ),
     argument_type(
         long="--table",
         short="-t",
-        help="Output translation table",
+        help="Output translation table\n",
         action="store_true",
         argument_name="",
     ),
@@ -80,12 +80,12 @@ arguments = [
     )
 ]
 
-USAGE = f"Usage:\n\t{COMMAND_NAME} [OPTIONS]\n"
-OPTIONS = "\nOptions:\n"
+USAGE = f"Usage:\n\t{COMMAND_NAME} [OPTIONS]"
+OPTIONS = "Options:\n"
 for argument in arguments:
     long = argument["long"]
     short = argument["short"]
-    OPTIONS += "\t%s, %s %s\n\t\t\t\t\t%s\n" % (
+    OPTIONS += "\t%s, %s %s\n\t\t\t\t\t%s" % (
         short, long, argument["argument_name"], argument["help"]
     )
 
@@ -95,4 +95,4 @@ for argument in arguments:
 
     PARSER.add_argument(long, short, **argument)
 
-HELP_MESSAGE = USAGE + OPTIONS
+HELP_MESSAGE = "\n%s\n\n%s\n" % (USAGE, OPTIONS)
