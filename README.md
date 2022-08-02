@@ -4,7 +4,7 @@
 
 ```zsh
 $ git clone https://github.com/ogty/tools-for-internationalization
-$ source ./tools-for-internationalization/setup.sh
+$ source ./tools-for-internationalization/setup.sh # or make
 ```
 
 ## 📖 Usage

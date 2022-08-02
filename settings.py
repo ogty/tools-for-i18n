@@ -80,7 +80,7 @@ arguments = [
     )
 ]
 
-USAGE = f"Usage:\n\t{COMMAND_NAME} [OPTIONS]"
+USAGE = "Usage:\n\t%s [OPTIONS]" % COMMAND_NAME
 OPTIONS = "Options:\n"
 for argument in arguments:
     long = argument["long"]

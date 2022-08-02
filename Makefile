@@ -1,3 +1,6 @@
+setup:
+	source ./setup.sh
+
 sample:
 	i18nseg -f ./sample/i18n.yaml -l ja en -t
 
