@@ -71,9 +71,20 @@ class LanguageSegmenter:
                     ensure_ascii=False,
                 )
 
-    def reverse_generation(self) -> None:
+    def reverse_generation(self, language: str = None, file_name: str = None) -> None:
+        """Method to generate a yaml file from data in json format
+
+        Args:
+            language (str, optional):
+                Arguments for converting "empty" to the specified language. Defaults to None
+            file_name (str, optional): File name to output. Defaults to None.
+        """
+        result = ""
         before = []
         for string_breadcrumb_list, element_value in LanguageSegmenter.json_format_data:
+            if language is not None:
+                string_breadcrumb_list = re.sub(r"empty$", language, string_breadcrumb_list)
+
             breadcrumb_list = string_breadcrumb_list.split(".")
             breadcrumb_list_length = len(breadcrumb_list)
             same_paths = list(set(before) & set(breadcrumb_list))
@@ -85,11 +96,17 @@ class LanguageSegmenter:
 
                     if (breadcrumb_list_length - 1) == index:
                         element_value = element_value.replace("\n", f"\n{string_indent}")
-                        print("%s%s: %s" % (string_indent, path, element_value))
+                        result += "%s%s: %s" % (string_indent, path, element_value)
                     else:
-                        print("%s%s:" % (string_indent, path))
+                        result += "%s%s:" % (string_indent, path)
 
             before = breadcrumb_list
+
+        print(result)
+
+        if file_name is not None:
+            with open(file_name, "w", encoding="utf-8") as f:
+                f.write(result)
 
     def get_value(self, path: str, data: Dict[str, any], language: str) -> any:
         """Function to get data from a string connected by dots
@@ -111,6 +128,8 @@ class LanguageSegmenter:
 
         Args:
             languages (List[str]): Selecting the language of output
+            file_name (str, optional): File name to output. Defaults to None.
+            empty (bool, optional): Whether to display empty data as well. Defaults to False.
         """
         if empty:
             languages += ["EMPTY"]
