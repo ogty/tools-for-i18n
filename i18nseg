@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import argparse
+# import argparse
 from io import StringIO
 import json
 import os
@@ -10,19 +10,19 @@ from typing import Dict, List
 
 import yaml
 
-from settings import EXPORT_FILE_NAME, TABLE_TEMPLATE, HELP_MESSAGE
+from settings import EXPORT_FILE_NAME, EMPTY_DATA_NAME, TABLE_TEMPLATE, HELP_MESSAGE, parser
 
 
 class LanguageSegmenter:
     """Segment translation files by language
 
     Variables:
-        base_data (dict): Base translation data
-        base_language (str): Base language
-        segmented_data (dict): Segmented translation data
-        breadcrumb_list (list): Breadcrumb list
+        base_data        (dict): Base translation data
+        base_language     (str): Base language
+        segmented_data   (dict): Segmented translation data
+        breadcrumb_list  (list): Breadcrumb list
+        json_format_data (list): Json format data
     """
-
     base_data = {}
     base_language = ""
     segmented_data = {}
@@ -33,9 +33,9 @@ class LanguageSegmenter:
         """Initialization handles file loading and segmenting
 
         Args:
-            import_file_name (str): Used to read yaml file
-            languages (List[str]): Selection of the language described in the yaml file
-            base_language (str, optional): Most reliable language. Defaults to None.
+            import_file_name            (str): Used to read yaml file
+            languages             (List[str]): Selection of the language described in the yaml file
+            base_language     (str, optional): Most reliable language. Defaults to None.
         """
         self.languages = languages
         LanguageSegmenter.base_language = base_language
@@ -49,7 +49,7 @@ class LanguageSegmenter:
         """Output internationalization-compliant files.
 
         Args:
-            path (str): Path to the location to be created
+            path  (str): Path to the location to be created
         """
         for language in self.languages:
             locales_path = os.path.join(path, language)
@@ -62,13 +62,13 @@ class LanguageSegmenter:
                     ensure_ascii=False,
                 )
 
-    def reverse_generation(self, language: str = None, file_name: str = None) -> None:
+    def reverse_generation(self, file_name: str = None, language: str = None) -> None:
         """Method to generate a yaml file from data in json format
 
         Args:
-            language (str, optional):
-                Arguments for converting "empty" to the specified language. Defaults to None
-            file_name (str, optional): File name to output. Defaults to None.
+            file_name  (str, optional): File name to output. Defaults to None.
+            language   (str, optional): Arguments for converting "empty" to the specified language.
+                                        Defaults to None
         """
         result = ""
         before = []
@@ -99,13 +99,13 @@ class LanguageSegmenter:
             with open(file_name, "w", encoding="utf-8") as f:
                 f.write(result)
 
-    def get_value(self, path: str, data: Dict[str, any], language: str) -> any:
+    def get_value(self, data: Dict[str, any], path: str, language: str) -> any:
         """Function to get data from a string connected by dots
 
         Args:
-            path (str): Paths connected by dots
-            data (Dict[str, any]): Data traced by the path
-            language (str): Languages to be retrieved from data
+            data      (Dict[str, any]): Data traced by the path
+            path                 (str): Paths connected by dots
+            language             (str): Languages to be retrieved from data
 
         Returns:
             any: It is the type of data for the translation.
@@ -118,13 +118,12 @@ class LanguageSegmenter:
         """Outputs a translation table
 
         Args:
-            languages (List[str]): Selecting the language of output
-            file_name (str, optional): File name to output. Defaults to None.
-            empty (bool, optional): Whether to display empty data as well.
-            Defaults to False.
+            languages       (List[str]): Selecting the language of output
+            file_name   (str, optional): File name to output. Defaults to None.
+            empty      (bool, optional): Whether to display empty data as well. Defaults to False.
         """
         if empty:
-            languages += ["EMPTY"]
+            languages.append(EMPTY_DATA_NAME)
 
         io = StringIO()
         column_string = "</td><td>".join(list(map(lambda x: x.upper(), languages)))
@@ -135,29 +134,25 @@ class LanguageSegmenter:
             html_data_string += "<tr></tr><tr><td>\n\n```\n%s\n```\n\n</td>" % path
 
             for language in languages:
-                language = languages[0] if language == "EMPTY" else language
                 data = self.get_value(
                     path=path,
                     data=LanguageSegmenter.base_data,
-                    language=language
+                    language=languages[0] if language == EMPTY_DATA_NAME else language,
                 )
                 json.dump(obj=data, fp=io, indent=4, ensure_ascii=False)
                 string_data = io.getvalue()
 
-                if language == "EMPTY":
+                if language == EMPTY_DATA_NAME:
                     if not isinstance(data, str):
                         splited_string_data = string_data.split("\n")
                         for line in splited_string_data:
                             match = re.search(r'"(.*)"', line)
-                            if match is None:
-                                continue
+                            if match is not None:
+                                string_data = string_data.replace(match.group(1), "")
+                    else:
+                        match = re.search(r'"(.*)"', string_data)
+                        if match is not None:
                             string_data = string_data.replace(match.group(1), "")
-                        continue
-
-                    match = re.search(r'"(.*)"', string_data)
-                    if match is None:
-                        continue
-                    string_data = string_data.replace(match.group(1), "")
 
                 path_and_data = ("%s.%s" % (path, language.lower()), string_data)
                 LanguageSegmenter.json_format_data.append(path_and_data)
@@ -165,6 +160,7 @@ class LanguageSegmenter:
                 html_data_string += "<td>\n\n```js\n%s\n```\n\n</td>" % string_data
                 io.truncate(0)  # Reset data
                 io.seek(0)      # Reset position
+
             html_data_string += "</tr>"
 
         result = template.replace("---", html_data_string)
@@ -182,7 +178,7 @@ class LanguageSegmenter:
             """Executed at initialization. Result reflects class variables of parent class.
 
             Args:
-                language (str): Specify a single language
+                language  (str): Specify a single language
             """
             self.language = language
             self.result = {}
@@ -194,7 +190,7 @@ class LanguageSegmenter:
             """Recursive functions for segmenting translation data
 
             Args:
-                translation_data (Dict[str, any]): key, value in value data
+                translation_data  (Dict[str, any]): key, value in value data
 
             Returns:
                 Dict[str, any]: Elements of translation data
@@ -220,9 +216,8 @@ class LanguageSegmenter:
             """Create breadcrumb list at initialization
 
             Args:
-                data (Dict[str, any]): key, value in value data
-                parent (str, optional): Route information up to now.
-                Defaults to None.
+                data   (Dict[str, any]): key, value in value data
+                parent  (str, optional): Route information up to now. Defaults to None.
             """
             for key, value in data.items():
                 if LanguageSegmenter.base_language in value:
@@ -235,22 +230,12 @@ class LanguageSegmenter:
 
 
 if __name__ == "__main__":
-    # TODO: Load config and make it available.
-    # TODO: Organize the code
-    # TODO: Raises an error when there is a missing element
+    # - [ ] Load config and make it available.
+    # - [ ] Raises an error when there is a missing element
     if sys.argv[1] == "--help" or sys.argv[1] == "-h":
         print(HELP_MESSAGE)
         sys.exit(0)
 
-    parser = argparse.ArgumentParser(description="Segment translation files by language")
-    parser.add_argument("--file", "-f", type=str, help="Path to the translation file")
-    parser.add_argument("--base_language", "-b", type=str, help="Most reliable language")
-    parser.add_argument("--output", "-o", type=str, help="Path to the output directory")
-    parser.add_argument("--file_name", "-n", type=str, help="Output file name")
-    parser.add_argument("--languages", "-l", type=str, nargs="+", help="Languages to be segmented")
-    parser.add_argument("--table", "-t", action="store_true", help="Output translation table")
-    parser.add_argument("--empty", "-e", action="store_true", help="Output empty translation")
-    parser.add_argument("--reverse", "-r", action="store_true", help="Reverse translation")
     args = parser.parse_args()
 
     if args.file is None:
@@ -281,5 +266,5 @@ if __name__ == "__main__":
     if args.reverse:
         segmenter.reverse_generation(
             language="fr",
-            file_name="./sample/sample.yaml",
+            file_name="./sample.yaml",
         )
