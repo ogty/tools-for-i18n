@@ -24,7 +24,7 @@ Options:
     -h, --help
                     Show this help message and exit
 """
-
+INDENT = 4
 PARSER = argparse.ArgumentParser(description="Segment translation files by language")
 PARSER.add_argument("--file",          "-f", type=str, help="Path to the translation file")
 PARSER.add_argument("--output",        "-o", type=str, help="Path to the output directory")

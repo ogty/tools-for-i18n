@@ -10,6 +10,7 @@ from typing import Dict, List
 import yaml
 
 from settings import (
+    INDENT,
     PARSER,
     HELP_MESSAGE,
     CHARACTER_CODE,
@@ -30,7 +31,7 @@ class LanguageSegmenter:
         path_and_element_data  (list): Path and element data
     """
     base_data = {}
-    base_language = ""
+    base_language = ''
     segmented_data = {}
     breadcrumb_list = []
     path_and_element_data = []
@@ -48,8 +49,8 @@ class LanguageSegmenter:
         LanguageSegmenter.base_language = self.base_language
 
         # Reads and assigns translation files
-        with open(import_file_name, "r", encoding=CHARACTER_CODE) as f:
-            LanguageSegmenter.base_data = yaml.safe_load(f)
+        with open(import_file_name, 'r', encoding=CHARACTER_CODE) as translation_file:
+            LanguageSegmenter.base_data = yaml.safe_load(translation_file)
 
         # Segment the translation data from the given Languages into their respective languages
         [self.Processer(language) for language in self.languages]
@@ -66,11 +67,11 @@ class LanguageSegmenter:
         for language in self.languages:
             locales_path = os.path.join(path, language)
             os.makedirs(locales_path, exist_ok=True)
-            with open(os.path.join(locales_path, EXPORT_FILE_NAME), "w") as f:
+            with open(os.path.join(locales_path, EXPORT_FILE_NAME), 'w') as translation_file:
                 json.dump(
-                    fp=f,
+                    fp=translation_file,
                     obj=LanguageSegmenter.segmented_data[language],
-                    indent=4,
+                    indent=INDENT,
                     ensure_ascii=False,
                 )
 
@@ -82,7 +83,7 @@ class LanguageSegmenter:
             language   (str, optional): Arguments for converting "empty" to the specified language.
                                         Defaults to None
         """
-        result = ""  # Finally, a string in yaml format is stored.
+        result = ''  # Finally, a string in yaml format is stored.
         before = []  # Stores the path of the previous data.
 
         path_and_element_data = LanguageSegmenter.path_and_element_data
@@ -97,7 +98,7 @@ class LanguageSegmenter:
                 )
 
             # Obtain the same point as "before".
-            breadcrumb_list = string_breadcrumb_list.split(".")
+            breadcrumb_list = string_breadcrumb_list.split('.')
             same_paths = list(set(before) & set(breadcrumb_list))
             same_path_indexes = [breadcrumb_list.index(same_path) for same_path in same_paths]
 
@@ -107,12 +108,11 @@ class LanguageSegmenter:
                 if index in same_path_indexes:
                     continue
 
-                string_indent = index * "    "
-                #                        ^^^^ 4 blanks
+                string_indent = index * (' ' * INDENT)
 
                 # If at the end of the path, store the element at the same time
                 if (len(breadcrumb_list) - 1) == index:
-                    element_value = element_value.replace("\n", "\n%s" % string_indent)
+                    element_value = element_value.replace('\n', "\n%s" % string_indent)
                     result += "%s%s: %s\n" % (string_indent, path, element_value)
                     continue
 
@@ -123,8 +123,8 @@ class LanguageSegmenter:
 
         print(result)
         if file_name is not None:
-            with open(file_name, "w", encoding=CHARACTER_CODE) as f:
-                f.write(result)
+            with open(file_name, 'w', encoding=CHARACTER_CODE) as yaml_translation_file:
+                yaml_translation_file.write(result)
 
     def get_value(self, data: Dict[str, any], path: str, language: str) -> any:
         """Function to get data from a string connected by dots
@@ -137,7 +137,7 @@ class LanguageSegmenter:
         Returns:
             any: It is the type of data for the translation.
         """
-        for key in path.split("."):
+        for key in path.split('.'):
             data = data[key]
         return data[language]
 
@@ -156,7 +156,7 @@ class LanguageSegmenter:
         column_string = "</td><td>".join(list(map(lambda x: x.upper(), languages)))
         template = TABLE_TEMPLATE.replace("---", column_string, 1)
 
-        html_data_string = ""
+        html_data_string = ''
         for path in LanguageSegmenter.breadcrumb_list:
             html_data_string += "<tr></tr><tr><td>\n\n```\n%s\n```\n\n</td>" % path
 
@@ -167,21 +167,21 @@ class LanguageSegmenter:
                     language=self.base_language if language == EMPTY_DATA_NAME else language,
                 )
                 # Convert and format Python objects to json format data
-                json.dump(obj=data, fp=io, indent=4, ensure_ascii=False)
+                json.dump(obj=data, fp=io, indent=INDENT, ensure_ascii=False)
                 string_data = io.getvalue()  # Get converted json format data
 
                 # Generate data with empty element names in the base language data
                 if language == EMPTY_DATA_NAME:
                     if not isinstance(data, str):
-                        splited_string_data = string_data.split("\n")
+                        splited_string_data = string_data.split('\n')
                         for line in splited_string_data:
                             match = re.search(r'"(.*)"', line)
                             if match is not None:
-                                string_data = string_data.replace(match.group(1), "")
+                                string_data = string_data.replace(match.group(1), '')
                     else:
                         match = re.search(r'"(.*)"', string_data)
                         if match is not None:
-                            string_data = string_data.replace(match.group(1), "")
+                            string_data = string_data.replace(match.group(1), '')
 
                 # Stores breadcrumb lists and corresponding data
                 path_and_data = ("%s.%s" % (path, language.lower()), string_data)
@@ -198,8 +198,8 @@ class LanguageSegmenter:
         io.close()
 
         if file_name is not None:
-            with open(file_name, "w", encoding=CHARACTER_CODE) as f:
-                f.write(result)
+            with open(file_name, 'w', encoding=CHARACTER_CODE) as html_file:
+                html_file.write(result)
 
     class Processer:
         """Class containing recursive functions for language-specific segmenting"""
@@ -251,11 +251,11 @@ class LanguageSegmenter:
             """
             for key, value in data.items():
                 if LanguageSegmenter.base_language in value:
-                    path = key if parent is None else f"{parent}.{key}"
+                    path = key if parent is None else "%s.%s" % (parent, key)
                     LanguageSegmenter.breadcrumb_list.append(path)
                     continue
 
-                path = key if parent is None else f"{parent}.{key}"
+                path = key if parent is None else "%s.%s" % (parent, key)
                 self.generate_breadcrumb_list(value, parent=path)
 
 
@@ -263,6 +263,8 @@ if __name__ == "__main__":
     # TODO:
     # - [ ] Load config and make it available.
     # - [ ] Raises an error when there is a missing element
+    # - [ ] Create reverse generation options
+    # - [ ] empty...
 
     if sys.argv[1] == "--help" or sys.argv[1] == "-h":
         print(HELP_MESSAGE)
