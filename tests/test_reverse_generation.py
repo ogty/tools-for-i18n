@@ -2,7 +2,7 @@ from typing import List
 import unittest
 
 
-def process(test_data: List[List[str]]) -> None:
+def process(test_data: List[List[str]]) -> str:
     result = ""
     before = []
     for string_breadcrumb_list, element_value in test_data:
