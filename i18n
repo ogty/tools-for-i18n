@@ -4,9 +4,9 @@ import argparse
 from io import StringIO
 import json
 import os
-import sys
 from pathlib import Path
 import re
+import sys
 from typing import Dict, List
 
 import yaml

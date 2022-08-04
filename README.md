@@ -38,13 +38,13 @@ $ i18n <commands> [options]
 **Segment the translation file into each language**
 
 ```zsh
-$ i18n segment ./sample/public/locales/i18n.yaml -l ja en -o ./sample/public/locales
+$ i18n segment -f ./sample/public/locales/i18n.yaml -l ja en -o ./sample/public/locales
 ```
 
 **Generate the original translation file (yaml) from the segmented translation file (json)**
 
 ```zsh
-$ i18n revgene ./sample/public/locales translations.json -al fr -o i18n.yaml
+$ i18n revgene -d ./sample/public/locales -f translations.json -o i18n.yaml
 ```
 
 **Output translation files to a file as a table**
@@ -56,6 +56,6 @@ $ i18n table ./sample/public/locales/i18n.yaml -l ja en -o i18n.md
 **Add new languages to the translation file and output as a table**
 
 ```zsh
-$ i18n revgene ./sample/public/locales translations.json -al empty -o i18n.yaml \
-  i18n table ./sample/public/locales/i18n.yaml -l ja en empty
+$ i18n revgene -d ./sample/public/locales -f translations.json -al empty -o i18n.yaml \
+  i18n table -f ./sample/public/locales/i18n.yaml -l ja en empty
 ```
