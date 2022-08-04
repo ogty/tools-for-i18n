@@ -11,13 +11,7 @@ from typing import Dict, List
 
 import yaml
 
-from settings import (
-    INDENT,
-    HELP_MESSAGE,
-    CHARACTER_CODE,
-    TABLE_TEMPLATE,
-    EXPORT_FILE_NAME,
-)
+from settings import INDENT, HELP_MESSAGE, CHARACTER_CODE, TABLE_TEMPLATE, EXPORT_FILE_NAME
 
 
 RED = "\033[1;31m"
@@ -27,6 +21,15 @@ NO_COLOR = "\033[0m"
 
 
 class LanguageSegmenter:
+    """Segment translation files by language
+
+    Variables:
+        languages              (list): Target languages
+        base_data              (dict): Base translation data
+        segmented_data         (dict): Segmented translation data
+        breadcrumb_list        (list): Breadcrumb list
+        path_and_element_data  (list): Path and element data
+    """
     languages = []
     base_data = {}
     segmented_data = {}
@@ -34,6 +37,12 @@ class LanguageSegmenter:
     path_and_element_data = []
 
     def __init__(self, languages: List[str], import_file_name: str) -> None:
+        """Initialization. Acquisition of translation data and storage in class variables.
+
+        Args:
+            languages         (List[str]): Selection of the language described in the yaml file
+            import_file_name        (str): Used to read yaml file
+        """
         self.languages = languages
         self.string_table = ''
         LanguageSegmenter.languages = self.languages
@@ -43,6 +52,7 @@ class LanguageSegmenter:
             LanguageSegmenter.base_data = yaml.safe_load(translation_file)
 
     def __call__(self) -> None:
+        """Segment translation files and create/store breadcrumb lists"""
         # Segment the translation data from the given Languages into their respective languages
         [self.Processer(language) for language in self.languages]
 
@@ -50,6 +60,11 @@ class LanguageSegmenter:
         self.BreadcrumbListGenerator(self.languages[0])
 
     def write_segmented_data(self, directory: str) -> None:
+        """Create directory and write files for segmented translation files
+
+        Args:
+            directory  (str): Top directory for directory creation and file writing
+        """
         for language in self.languages:
             locales_path = os.path.join(directory, language)
             os.makedirs(locales_path, exist_ok=True)
@@ -62,11 +77,22 @@ class LanguageSegmenter:
                 )
 
     def _get_value(self, data: Dict[str, any], path: str, language: str) -> any:
+        """Retrieve hierarchical data data from a path
+
+        Args:
+            data      (Dict[str, any]): Data traced by the path
+            path                 (str): Paths connected by dots
+            language             (str): Language to be retrieved from data
+
+        Returns:
+            any: It is the type of data for the translation.
+        """
         for key in path.split('.'):
             data = data[key]
         return data[language]
 
     def generate_table(self) -> None:
+        """Create a table from the segmented translation data"""
         io = StringIO()
         column_string = "</td><td>".join(list(map(lambda x: x.upper(), self.languages)))
         template = TABLE_TEMPLATE.replace("---", column_string, 1)
@@ -99,15 +125,27 @@ class LanguageSegmenter:
         io.close()
 
     def output_table(self) -> None:
+        """Output a table."""
         print(self.string_table)
 
     def write_table(self, file_name: str) -> None:
+        """Writing to a table file.
+
+        Args:
+            file_name  (str): File name for writing the table
+        """
         with open(file_name, 'w', encoding=CHARACTER_CODE) as f:
             f.write(self.string_table)
 
     class Processer:
+        """Processing class for segmenting translation data"""
 
         def __init__(self, language: str):
+            """Initialize variables and segment translation data.
+
+            Args:
+                language  (str): Target language
+            """
             self.language = language
             self.result = {}              # Stores data only in the language of the argument
             self.before_key = ''          # Variables for error output. Often contains the last key.
@@ -121,9 +159,22 @@ class LanguageSegmenter:
                 sys.exit(self.error_count)
 
         def _error(self, message: str) -> None:
+            """Methods for colored error output
+
+            Args:
+                message  (str): Error message
+            """
             print("%sERROR%s: %s%s" % (RED, WHITE, message, NO_COLOR), file=sys.stderr)
 
         def _segmenter(self, translation_data: Dict[str, any]) -> Dict[str, any]:
+            """Methods to segment translation data by specific language
+
+            Args:
+                translation_data  (Dict[str, any]): Target translation data
+
+            Returns:
+                Dict[str, any]: It is the type of data for the translation.
+            """
             element = {}
             try:
                 for key, value in translation_data.items():
@@ -148,12 +199,24 @@ class LanguageSegmenter:
                     self.error_count += 1
 
     class BreadcrumbListGenerator:
+        """Classes for creating breadcrumb lists"""
 
         def __init__(self, base_language: str) -> None:
+            """Initialize variables and create a breadcrumb list.
+
+            Args:
+                base_language  (str): Reference language
+            """
             self.base_language = base_language
             self._generate_breadcrumb_list(LanguageSegmenter.base_data)
 
         def _generate_breadcrumb_list(self, data: Dict[str, any], parent: str = None) -> None:
+            """Methods for creating breadcrumb lists
+
+            Args:
+                data    (Dict[str, any]): Each element
+                parent   (str, optional): Previous paths. Defaults to None.
+            """
             for key, value in data.items():
                 if self.base_language in value:
                     path = key if parent is None else "%s.%s" % (parent, key)
@@ -165,20 +228,34 @@ class LanguageSegmenter:
 
 
 class ReverseGenerator:
+    """Reverse generated class from Json file"""
 
-    def __init__(self, file: str, directory: str, addtional_language: str = None) -> None:
+    def __init__(self, file_name: str, directory: str, addtional_language: str = None) -> None:
+        """Initialize variables.
+
+        Args:
+            addtional_language  (str, optional): Language to be added. Defaults to None.
+            file_name                     (str): Translation file name
+            directory                     (str): Directory containing translation files
+        """
         self.directory = directory
-        self.file = file
+        self.file_name = file_name
         self.addtional_language = addtional_language
 
         self.generated_data = ''
 
     def __call__(self) -> None:
+        """Call method"""
         self._reverse_generation()
 
     def _generate_data(self) -> any:
+        """Combine each translation data into a single array
+
+        Returns:
+            any: Returns base path and summarized data
+        """
         directory_path = Path(self.directory)
-        translation_file_paths = list(directory_path.glob("**/%s" % self.file))
+        translation_file_paths = list(directory_path.glob("**/%s" % self.file_name))
 
         languages = []
         base_count = 0
@@ -213,6 +290,11 @@ class ReverseGenerator:
         return (base_paths, path_and_element_array)
 
     def _sort(self) -> List[tuple]:
+        """Methods to sort languages so that they are grouped into their respective elements
+
+        Returns:
+            List[tuple]: Sorted data
+        """
         sorted_path_and_element = []
         base_paths, path_and_element_array = self._generate_data()
 
@@ -239,6 +321,7 @@ class ReverseGenerator:
         return sorted_path_and_element
 
     def _reverse_generation(self) -> None:
+        """Methods for reverse generation"""
         sorted_path_and_element = self._sort()
 
         before = []
@@ -263,16 +346,33 @@ class ReverseGenerator:
             before = breadcrumb_list
 
     def write(self, file_name: str) -> None:
+        """Write method for reverse-generated files
+
+        Args:
+            file_name  (str): File name for writing
+        """
         with open(file_name, 'w', encoding=CHARACTER_CODE) as f:
             f.write(self.generated_data)
 
     class DataSplitter:
+        """Class that performs data partitioning"""
 
         def __init__(self, data: any) -> None:
+            """Initialize variables.
+
+            Args:
+                data (any): Translation data
+            """
             self.data = data
             self.paths = []
 
         def splitter(self, data: any, parent: str) -> None:
+            """Methods for splitting
+
+            Args:
+                data    (any): Each element
+                parent  (str): Previous paths
+            """
             for key, value in data.items():
                 path = "%s.%s" % (parent, key) if parent else key
 
@@ -281,7 +381,8 @@ class ReverseGenerator:
                 else:
                     self.paths.append([path, value])
 
-        def __call__(self):
+        def __call__(self) -> None:
+            """Split data"""
             self.splitter(self.data, '')
             return self.paths
 
@@ -338,7 +439,7 @@ if __name__ == "__main__":
         addtional_language = args.addtional_language
 
         reverse_generator = ReverseGenerator(
-            file=file,
+            file_name=file,
             directory=directory,
             addtional_language=addtional_language,
         )
