@@ -404,15 +404,15 @@ if __name__ == "__main__":
 
     revgene = subparsers.add_parser("revgene", help='')
     revgene.add_argument("--file", "-f", type=str, help='')
-    revgene.add_argument("--directory", "-d", type=str, help='')
     revgene.add_argument("--output", "-o", type=str, help='')
+    revgene.add_argument("--directory", "-d", type=str, help='')
     revgene.add_argument("--addtional_language", "-al", type=str, help='')
     revgene.set_defaults(handler=RecursionError)
 
     table = subparsers.add_parser("table", help='')
     table.add_argument("--file", "-f", type=str, help='')
-    table.add_argument("--show", "-s", action="store_true", help='')
     table.add_argument("--output", "-o", type=str, help='')
+    table.add_argument("--show", "-s", action="store_true", help='')
     table.add_argument("--languages", "-l", type=str, nargs='+', help='')
     table.set_defaults(handler=LanguageSegmenter)
 

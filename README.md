@@ -10,184 +10,52 @@ $ source ./tools-for-internationalization/setup.sh # or make
 ## 📖 Usage
 
 ```
-Usage:
-	i18nseg [OPTIONS]
+$ i18n <commands> [options]
 ```
+
+## 🤖 Commands
+
+| Command   | Description                                                         |
+| --------- | ------------------------------------------------------------------- |
+| `segment` | Commands to split translation files into their respective languages |
+| `revgene` | Command to convert a split translation file into a yaml file        |
+| `table`   | Command to create a table from segmented translation data           |
+| `help`    | Commands to display usage, etc.                                     |
 
 ## 🔍 Options
 
-```
-Options:
-	-f, --file <FILE>
-					Path to the translation file
-	-o, --output <DIRECTORY>
-					Path to the output directory
-	-tf, --table_file <FILE>
-					Output file name
-	-rf, --reverse_file <FILE>
-					Output file name
-	-rl, --reverse_language <LANGUAGE>
-					Language for empty data
-	-bl, --base_language <LANGUAGE>
-					Most reliable language
-	-l, --languages <LANGUAGE [...]>
-					Languages to be segmented
-	-r, --reverse 
-					Reverse translation
-	-t, --table 
-					Output translation table
-	-e, --empty 
-					Output empty translation
-```
+| Name                        | Argument           | Commands                |
+| --------------------------- | ------------------ | ----------------------- |
+| `-f, --file`                | `<file>`           | segment, revgene, table |
+| `-o, --output`              | `<directory/file>` | segment, revgene, table |
+| `-l, --languages`           | `<language [...]>` | segment, table          |
+| `-al, --additonal_language` | `<language>`       | revgene                 |
+| `-d, --directory`           | `<directory>`      | revgene                 |
+| `-s, --show`                | -                  | table                   |
 
 ## ✏️ Example
 
-```
-$ i18nseg --file ./sample/i18n.yaml --languages ja en --table --empty
-$ i18nseg -f ./sample/i18n.yaml -l ja en -t -e -r -rl fr -rf ./sample/sample.yaml
-```
+**Segment the translation file into each language**
 
-## 🖨️ Output
-
-<table><tr><td>Path</td><td>JA</td><td>EN</td><td>EMPTY</td></tr><tr></tr><tr></tr><tr><td>
-
-```
-header.title
+```zsh
+$ i18n segment ./sample/public/locales/i18n.yaml -l ja en -o ./sample/public/locales
 ```
 
-</td><td>
+**Generate the original translation file (yaml) from the segmented translation file (json)**
 
-```js
-"タイトル"
+```zsh
+$ i18n revgene ./sample/public/locales translations.json -al fr -o i18n.yaml
 ```
 
-</td><td>
+**Output translation files to a file as a table**
 
-```js
-"Title"
+```zsh
+$ i18n table ./sample/public/locales/i18n.yaml -l ja en -o i18n.md
 ```
 
-</td><td>
+**Add new languages to the translation file and output as a table**
 
-```js
-""
+```zsh
+$ i18n revgene ./sample/public/locales translations.json -al empty -o i18n.yaml \
+  i18n table ./sample/public/locales/i18n.yaml -l ja en empty
 ```
-
-</td></tr><tr></tr><tr><td>
-
-```
-header.items
-```
-
-</td><td>
-
-```js
-[
-    "ログイン",
-    "会員登録",
-    {
-        "企業情報": [
-            "ブログ",
-            "採用情報",
-            "会社紹介",
-            "ヘルプセンター"
-        ]
-    }
-]
-```
-
-</td><td>
-
-```js
-[
-    "Log in",
-    "Sign up",
-    {
-        "Company": [
-            "Blog",
-            "Careers",
-            "Our story",
-            "Help Center"
-        ]
-    }
-]
-```
-
-</td><td>
-
-```js
-[
-    "",
-    "",
-    {
-        "": [
-            "",
-            "",
-            "",
-            ""
-        ]
-    }
-]
-```
-
-</td></tr><tr></tr><tr><td>
-
-```
-main.heroSentence
-```
-
-</td><td>
-
-```js
-"一人ではすごいものは完成できない。"
-```
-
-</td><td>
-
-```js
-"Nothing great is made alone."
-```
-
-</td><td>
-
-```js
-""
-```
-
-</td></tr><tr></tr><tr><td>
-
-```
-main.firstLevelComponent.secondLevelComponent
-```
-
-</td><td>
-
-```js
-[
-    "ブレインストーミング",
-    "デザイン",
-    "ビルド"
-]
-```
-
-</td><td>
-
-```js
-[
-    "Brainstorm",
-    "Design",
-    "Build"
-]
-```
-
-</td><td>
-
-```js
-[
-    "",
-    "",
-    ""
-]
-```
-
-</td></tr></table>
