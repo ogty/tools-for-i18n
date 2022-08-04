@@ -12,7 +12,7 @@ def process(test_data: List[List[str]]) -> str:
         same_path_indexes = [breadcrumb_list.index(same_path) for same_path in same_paths]
 
         for index, path in enumerate(breadcrumb_list):
-            if not index in same_path_indexes:
+            if index not in same_path_indexes:
                 string_indent = index * "  "
                 if (breadcrumb_list_length - 1) == index:
                     result += "%s%s: %s\n" % (string_indent, path, element_value)

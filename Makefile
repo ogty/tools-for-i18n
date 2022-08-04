@@ -1,8 +1,8 @@
 setup:
 	source ./setup.sh
 
-sample:
-	i18nseg --file ./sample/i18n.yaml --languages ja en --table --empty
+example:
+	i18nseg --file ./sample/i18n.yaml --languages ja en --table --empty --reverse
 
 usage:
 	@python3 -c "from settings import USAGE; print(USAGE)"

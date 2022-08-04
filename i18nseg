@@ -210,6 +210,29 @@ class LanguageSegmenter:
             with open(file_name, 'w', encoding=CHARACTER_CODE) as html_file:
                 html_file.write(result)
 
+    def tmp(self, languages: List[str]) -> None:
+        io = StringIO()
+
+        for path in LanguageSegmenter.breadcrumb_list:
+            for language in languages:
+                data = self.get_value(
+                    path=path,
+                    data=LanguageSegmenter.base_data,
+                    language=language,
+                )
+                # Convert and format Python objects to json format data
+                json.dump(obj=data, fp=io, indent=INDENT, ensure_ascii=False)
+                string_data = io.getvalue()  # Get converted json format data
+
+                # Stores breadcrumb lists and corresponding data
+                path_and_data = ("%s.%s" % (path, language.lower()), string_data)
+                LanguageSegmenter.path_and_element_data.append(path_and_data)
+
+                io.truncate(0)  # Reset data
+                io.seek(0)      # Reset position
+
+        io.close()
+
     class Processer:
         """Class containing recursive functions for language-specific segmenting"""
 
@@ -326,12 +349,19 @@ if __name__ == "__main__":
     if args.output:
         segmenter.write(args.output)
 
-    if args.table:
-        segmenter.output_table(
-            empty=args.empty,
-            languages=args.languages,
-            file_name=None if args.table_file is None else args.table_file,
-        )
+    # if args.table:
+    #     segmenter.output_table(
+    #         empty=args.empty,
+    #         languages=args.languages,
+    #         file_name=None if args.table_file is None else args.table_file,
+    #     )
+
+    segmenter.tmp(args.languages)
+
+    from pprint import pprint
+    print("-" * 50)
+    pprint(segmenter.path_and_element_data)
+    print("-" * 50)
 
     if args.reverse and args.table:
         segmenter.reverse_generation(

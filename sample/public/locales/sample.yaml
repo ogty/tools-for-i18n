@@ -2,7 +2,6 @@ header:
     title:
         ja: "タイトル"
         en: "Title"
-        fr: ""
     items:
         ja: [
             "ログイン",
@@ -28,23 +27,10 @@ header:
                 ]
             }
         ]
-        fr: [
-            "",
-            "",
-            {
-                "": [
-                    "",
-                    "",
-                    "",
-                    ""
-                ]
-            }
-        ]
 main:
     heroSentence:
         ja: "一人ではすごいものは完成できない。"
         en: "Nothing great is made alone."
-        fr: ""
     firstLevelComponent:
         secondLevelComponent:
             ja: [
@@ -56,9 +42,4 @@ main:
                 "Brainstorm",
                 "Design",
                 "Build"
-            ]
-            fr: [
-                "",
-                "",
-                ""
             ]
