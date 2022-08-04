@@ -15,12 +15,12 @@ $ i18n <commands> [options]
 
 ## 🤖 Commands
 
-| Command   | Description                                                         |
-| --------- | ------------------------------------------------------------------- |
-| `segment` | Commands to split translation files into their respective languages |
-| `revgene` | Command to convert a split translation file into a yaml file        |
-| `table`   | Command to create a table from segmented translation data           |
-| `help`    | Commands to display usage, etc.                                     |
+| Command   | Description                                                             |
+| --------- | ----------------------------------------------------------------------- |
+| `segment` | Commands to segment translation files into their respective languages   |
+| `revgene` | Command to convert a segmented translation file into a yaml file        |
+| `table`   | Command to create a table from segmented translation data               |
+| `help`    | Commands to display usage, etc.                                         |
 
 ## 🔍 Options
 
@@ -56,6 +56,6 @@ $ i18n table ./sample/public/locales/i18n.yaml -l ja en -o i18n.md
 **Add new languages to the translation file and output as a table**
 
 ```zsh
-$ i18n revgene -d ./sample/public/locales -f translations.json -al empty -o i18n.yaml \
+$ i18n revgene -d ./sample/public/locales -f translations.json -al empty -o i18n.yaml && \
   i18n table -f ./sample/public/locales/i18n.yaml -l ja en empty
 ```
