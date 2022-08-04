@@ -20,10 +20,10 @@ from settings import (
 )
 
 
-NC = "\033[0m"
 RED = "\033[1;31m"
 CYAN = "\033[1;36m"
 WHITE = "\033[1;37m"
+NO_COLOR = "\033[0m"
 
 
 class LanguageSegmenter:
@@ -220,9 +220,9 @@ class LanguageSegmenter:
                 language  (str): Specify a single language
             """
             self.language = language
-            self.result = {}
-            self.before_key = ''
-            self.before_than_before = ''
+            self.result = {}              # Stores data only in the language of the argument
+            self.before_key = ''          # Variables for error output. Often contains the last key.
+            self.before_than_before = ''  # The key before the last one is entered.
             self.error_count = 0
 
             self.segmenter(LanguageSegmenter.base_data)
@@ -237,7 +237,7 @@ class LanguageSegmenter:
             Args:
                 message  (str): Error message
             """
-            print("%sERROR%s: %s%s" % (RED, WHITE, message, NC), file=sys.stderr)
+            print("%sERROR%s: %s%s" % (RED, WHITE, message, NO_COLOR), file=sys.stderr)
 
         def segmenter(self, translation_data: Dict[str, any]) -> Dict[str, any]:
             """Recursive functions for segmenting translation data
@@ -262,7 +262,7 @@ class LanguageSegmenter:
 
                 self.result = element
                 return element
-            except AttributeError:
+            except AttributeError:  # Output missing elements in a particular language
                 if self.before_key != self.before_than_before:
                     error_message = 'The %s"%s"%s element of %s"%s"%s is missing.' % (
                         CYAN, self.before_key, WHITE, CYAN, self.language, WHITE,
