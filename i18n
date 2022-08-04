@@ -1,0 +1,364 @@
+#!/usr/bin/env python3
+
+import argparse
+from io import StringIO
+import json
+import os
+import sys
+from pathlib import Path
+import re
+from typing import Dict, List
+
+import yaml
+
+from settings import (
+    INDENT,
+    HELP_MESSAGE,
+    CHARACTER_CODE,
+    TABLE_TEMPLATE,
+    EXPORT_FILE_NAME,
+)
+
+
+RED = "\033[1;31m"
+CYAN = "\033[1;36m"
+WHITE = "\033[1;37m"
+NO_COLOR = "\033[0m"
+
+
+class LanguageSegmenter:
+    languages = []
+    base_data = {}
+    segmented_data = {}
+    breadcrumb_list = []
+    path_and_element_data = []
+
+    def __init__(self, languages: List[str], import_file_name: str) -> None:
+        self.languages = languages
+        self.string_table = ''
+        LanguageSegmenter.languages = self.languages
+
+        # Reads and assigns translation files
+        with open(import_file_name, 'r', encoding=CHARACTER_CODE) as translation_file:
+            LanguageSegmenter.base_data = yaml.safe_load(translation_file)
+
+    def __call__(self) -> None:
+        # Segment the translation data from the given Languages into their respective languages
+        [self.Processer(language) for language in self.languages]
+
+        # Also create a breadcrumb list from the translation data
+        self.BreadcrumbListGenerator(self.languages[0])
+
+    def write_segmented_data(self, directory: str) -> None:
+        for language in self.languages:
+            locales_path = os.path.join(directory, language)
+            os.makedirs(locales_path, exist_ok=True)
+            with open(os.path.join(locales_path, EXPORT_FILE_NAME), 'w') as translation_file:
+                json.dump(
+                    fp=translation_file,
+                    obj=LanguageSegmenter.segmented_data[language],
+                    indent=INDENT,
+                    ensure_ascii=False,
+                )
+
+    def _get_value(self, data: Dict[str, any], path: str, language: str) -> any:
+        for key in path.split('.'):
+            data = data[key]
+        return data[language]
+
+    def generate_table(self) -> None:
+        io = StringIO()
+        column_string = "</td><td>".join(list(map(lambda x: x.upper(), self.languages)))
+        template = TABLE_TEMPLATE.replace("---", column_string, 1)
+
+        html_data_string = ''
+        for path in LanguageSegmenter.breadcrumb_list:
+            html_data_string += "<tr></tr><tr><td>\n\n```\n%s\n```\n\n</td>" % path
+
+            for language in self.languages:
+                data = self._get_value(
+                    path=path,
+                    data=LanguageSegmenter.base_data,
+                    language=language,
+                )
+                # Convert and format Python objects to json format data
+                json.dump(obj=data, fp=io, indent=INDENT, ensure_ascii=False)
+                string_data = io.getvalue()  # Get converted json format data
+
+                # Stores breadcrumb lists and corresponding data
+                path_and_data = ("%s.%s" % (path, language.lower()), string_data)
+                LanguageSegmenter.path_and_element_data.append(path_and_data)
+
+                html_data_string += "<td>\n\n```js\n%s\n```\n\n</td>" % string_data
+                io.truncate(0)  # Reset data
+                io.seek(0)      # Reset position
+
+            html_data_string += "</tr>"
+
+        self.string_table = template.replace("---", html_data_string)
+        io.close()
+
+    def output_table(self) -> None:
+        print(self.string_table)
+
+    def write_table(self, file_name: str) -> None:
+        with open(file_name, 'w', encoding=CHARACTER_CODE) as f:
+            f.write(self.string_table)
+
+    class Processer:
+
+        def __init__(self, language: str):
+            self.language = language
+            self.result = {}              # Stores data only in the language of the argument
+            self.before_key = ''          # Variables for error output. Often contains the last key.
+            self.before_than_before = ''  # The key before the last one is entered.
+            self.error_count = 0
+
+            self._segmenter(LanguageSegmenter.base_data)
+            LanguageSegmenter.segmented_data[self.language] = self.result
+
+            if self.error_count > 0:
+                sys.exit(self.error_count)
+
+        def _error(self, message: str) -> None:
+            print("%sERROR%s: %s%s" % (RED, WHITE, message, NO_COLOR), file=sys.stderr)
+
+        def _segmenter(self, translation_data: Dict[str, any]) -> Dict[str, any]:
+            element = {}
+            try:
+                for key, value in translation_data.items():
+                    if self.language in value:
+                        element[key] = value[self.language]
+                        continue
+
+                    if key not in LanguageSegmenter.languages:
+                        self.before_key = key
+
+                    element[key] = self._segmenter(value)
+
+                self.result = element
+                return element
+            except AttributeError:  # Output missing elements in a particular language
+                if self.before_key != self.before_than_before:
+                    error_message = 'The %s"%s"%s element of %s"%s"%s is missing.' % (
+                        CYAN, self.before_key, WHITE, CYAN, self.language, WHITE,
+                    )
+                    self._error(error_message)
+                    self.before_than_before = self.before_key
+                    self.error_count += 1
+
+    class BreadcrumbListGenerator:
+
+        def __init__(self, base_language: str) -> None:
+            self.base_language = base_language
+            self._generate_breadcrumb_list(LanguageSegmenter.base_data)
+
+        def _generate_breadcrumb_list(self, data: Dict[str, any], parent: str = None) -> None:
+            for key, value in data.items():
+                if self.base_language in value:
+                    path = key if parent is None else "%s.%s" % (parent, key)
+                    LanguageSegmenter.breadcrumb_list.append(path)
+                    continue
+
+                path = key if parent is None else "%s.%s" % (parent, key)
+                self._generate_breadcrumb_list(value, parent=path)
+
+
+class ReverseGenerator:
+
+    def __init__(self, file: str, directory: str, addtional_language: str = None) -> None:
+        self.directory = directory
+        self.file = file
+        self.addtional_language = addtional_language
+
+        self.generated_data = ''
+
+    def __call__(self) -> None:
+        self._reverse_generation()
+
+    def _generate_data(self) -> any:
+        directory_path = Path(self.directory)
+        translation_file_paths = list(directory_path.glob("**/%s" % self.file))
+
+        languages = []
+        base_count = 0
+        base_paths = []
+        path_and_element_array = []
+        for translation_file_path in translation_file_paths:
+            language = str(translation_file_path).split('/')[-2]
+            languages.append(language)
+
+            with open(translation_file_path, 'r', encoding=CHARACTER_CODE) as translation_file:
+                translation_data = json.load(translation_file)
+
+            data_splitter = self.DataSplitter(translation_data)
+            path_and_element = data_splitter()
+
+            io = StringIO()
+            for path, element in path_and_element:
+                json.dump(obj=element, fp=io, indent=4, ensure_ascii=False)
+                string_element = io.getvalue()
+                path = "%s.%s" % (path, language)
+
+                path_and_element_array.append((path, string_element))
+
+                if base_count == 0:
+                    base_paths.append(path)
+
+                io.truncate(0)
+                io.seek(0)
+
+            base_count += 1
+
+        return (base_paths, path_and_element_array)
+
+    def _sort(self) -> List[tuple]:
+        sorted_path_and_element = []
+        base_paths, path_and_element_array = self._generate_data()
+
+        for base_path in base_paths:
+            for path, element in path_and_element_array:
+                if path.split('.')[:-1] != base_path.split('.')[:-1]:
+                    continue
+                sorted_path_and_element.append((path, element))
+
+                if not self.addtional_language:
+                    continue
+
+                if base_path == path:
+                    splited_element = element.split('\n')
+                    for line in splited_element:
+                        match = re.search(r'"(.*)"', line)
+                        if match is None:
+                            continue
+                        element = element.replace(match.group(1), '')
+
+                    path = "%s.%s" % ('.'.join(path.split('.')[:-1]), self.addtional_language)
+                    sorted_path_and_element.append((path, element))
+
+        return sorted_path_and_element
+
+    def _reverse_generation(self) -> None:
+        sorted_path_and_element = self._sort()
+
+        before = []
+        for string_breadcrumb_list, element_value in sorted_path_and_element:
+            breadcrumb_list = string_breadcrumb_list.split('.')
+            same_paths = list(set(before) & set(breadcrumb_list))
+            same_path_indexes = [breadcrumb_list.index(same_path) for same_path in same_paths]
+
+            for index, path in enumerate(breadcrumb_list):
+                if index in same_path_indexes:
+                    continue
+
+                string_indent = index * (' ' * INDENT)
+
+                if (len(breadcrumb_list) - 1) == index:
+                    element_value = element_value.replace('\n', "\n%s" % string_indent)
+                    self.generated_data += "%s%s: %s\n" % (string_indent, path, element_value)
+                    continue
+
+                self.generated_data += "%s%s:\n" % (string_indent, path)
+
+            before = breadcrumb_list
+
+    def write(self, file_name: str) -> None:
+        with open(file_name, 'w', encoding=CHARACTER_CODE) as f:
+            f.write(self.generated_data)
+
+    class DataSplitter:
+
+        def __init__(self, data: any) -> None:
+            self.data = data
+            self.paths = []
+
+        def splitter(self, data: any, parent: str) -> None:
+            for key, value in data.items():
+                path = "%s.%s" % (parent, key) if parent else key
+
+                if isinstance(value, dict):
+                    self.splitter(value, path)
+                else:
+                    self.paths.append([path, value])
+
+        def __call__(self):
+            self.splitter(self.data, '')
+            return self.paths
+
+
+if __name__ == "__main__":
+    # Help Command
+    if sys.argv[1] == "help":
+        print(HELP_MESSAGE)
+        sys.exit(0)
+
+    parser = argparse.ArgumentParser(description='')
+    subparsers = parser.add_subparsers()
+
+    segment = subparsers.add_parser("segment", help='')
+    segment.add_argument("--file", "-f", type=str, help='')
+    segment.add_argument("--output", "-o", type=str, help='')
+    segment.add_argument("--languages", "-l", type=str, nargs='+', help='')
+    segment.set_defaults(handler=LanguageSegmenter)
+
+    revgene = subparsers.add_parser("revgene", help='')
+    revgene.add_argument("--file", "-f", type=str, help='')
+    revgene.add_argument("--directory", "-d", type=str, help='')
+    revgene.add_argument("--output", "-o", type=str, help='')
+    revgene.add_argument("--addtional_language", "-al", type=str, help='')
+    revgene.set_defaults(handler=RecursionError)
+
+    table = subparsers.add_parser("table", help='')
+    table.add_argument("--file", "-f", type=str, help='')
+    table.add_argument("--show", "-s", action="store_true", help='')
+    table.add_argument("--output", "-o", type=str, help='')
+    table.add_argument("--languages", "-l", type=str, nargs='+', help='')
+    table.set_defaults(handler=LanguageSegmenter)
+
+    args = parser.parse_args()
+    if not hasattr(args, "handler"):
+        print(HELP_MESSAGE)
+        exit(1)
+
+    # Segment Command
+    if sys.argv[1] == "segment":
+        segmenter = LanguageSegmenter(languages=args.languages, import_file_name=args.file)
+        segmenter()
+
+        if args.output:
+            segmenter.write_segmented_data(directory=args.output)
+
+        exit(0)
+
+    # Reverse Generation Command
+    if sys.argv[1] == "revgene":
+        file = args.file
+        directory = args.directory
+        output_file_name = args.output
+        addtional_language = args.addtional_language
+
+        reverse_generator = ReverseGenerator(
+            file=file,
+            directory=directory,
+            addtional_language=addtional_language,
+        )
+        reverse_generator()
+
+        if output_file_name:
+            reverse_generator.write(output_file_name)
+
+        exit(0)
+
+    # Table Command
+    if sys.argv[1] == "table":
+        segmenter = LanguageSegmenter(languages=args.languages, import_file_name=args.file)
+        segmenter()
+        segmenter.generate_table()
+
+        if args.show:
+            segmenter.output_table()
+
+        if args.output:
+            segmenter.write_table(file_name=args.output)
+
+        exit(0)
