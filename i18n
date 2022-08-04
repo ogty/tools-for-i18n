@@ -396,12 +396,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='')
     subparsers = parser.add_subparsers()
 
+    # Segment Command
     segment = subparsers.add_parser("segment", help='')
     segment.add_argument("--file", "-f", type=str, help='')
     segment.add_argument("--output", "-o", type=str, help='')
     segment.add_argument("--languages", "-l", type=str, nargs='+', help='')
     segment.set_defaults(handler=LanguageSegmenter)
 
+    # Reverse Generation Command
     revgene = subparsers.add_parser("revgene", help='')
     revgene.add_argument("--file", "-f", type=str, help='')
     revgene.add_argument("--output", "-o", type=str, help='')
@@ -409,6 +411,7 @@ if __name__ == "__main__":
     revgene.add_argument("--addtional_language", "-al", type=str, help='')
     revgene.set_defaults(handler=RecursionError)
 
+    # Table Command
     table = subparsers.add_parser("table", help='')
     table.add_argument("--file", "-f", type=str, help='')
     table.add_argument("--output", "-o", type=str, help='')
