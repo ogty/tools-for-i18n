@@ -30,12 +30,14 @@ class LanguageSegmenter:
     """Segment translation files by language
 
     Variables:
+        languages              (list): Target languages
         base_data              (dict): Base translation data
         base_language           (str): Base language
         segmented_data         (dict): Segmented translation data
         breadcrumb_list        (list): Breadcrumb list
         path_and_element_data  (list): Path and element data
     """
+    languages = []
     base_data = {}
     base_language = ''
     segmented_data = {}
@@ -52,6 +54,7 @@ class LanguageSegmenter:
         """
         self.languages = languages
         self.base_language = base_language
+        LanguageSegmenter.languages = self.languages
         LanguageSegmenter.base_language = self.base_language
 
         # Reads and assigns translation files
@@ -252,7 +255,7 @@ class LanguageSegmenter:
                         element[key] = value[self.language]
                         continue
 
-                    if key not in ["ja", "en", "fr"]:
+                    if key not in LanguageSegmenter.languages:
                         self.before_key = key
 
                     element[key] = self.segmenter(value)
