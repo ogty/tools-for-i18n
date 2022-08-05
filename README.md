@@ -64,5 +64,5 @@ $ i18n table -f ./sample/public/locales/i18n.yaml -l ja en -o i18n.md
 
 ```zsh
 $ i18n revgene -d ./sample/public/locales -f translations.json -al fr -o i18n.yaml && \
-  i18n table -f ./sample/public/locales/i18n.yaml -l ja en fr
+  i18n table -f ./sample/public/locales/i18n.yaml -l ja en fr -o i18n.md
 ```

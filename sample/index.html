@@ -12,29 +12,182 @@
 <table border="1">
     <thead>
         <tr>
-        {% for column in columns -%}
-            <th>{{ column }}</th>
-        {% endfor -%}
+        <th>path</th>
+        <th>ja</th>
+        <th>en</th>
+        <th>fr</th>
         </tr>
     </thead>
 
     <tbody>
-    {%- for path, element in data.items() %}
         <tr>
-        <td>{{ path }}</td>
-        {%+ for language in languages -%}
+        <td>header.title</td>
         <td>
 
 <pre>
 <code class="data">
-{{ element[language] }}
+"タイトル"
 </code>
 </pre>
 
         </td>
-        {% endfor -%}
+        <td>
+
+<pre>
+<code class="data">
+"Title"
+</code>
+</pre>
+
+        </td>
+        <td>
+
+<pre>
+<code class="data">
+"Titre"
+</code>
+</pre>
+
+        </td>
         </tr>
-    {% endfor -%}
+    
+        <tr>
+        <td>header.items</td>
+        <td>
+
+<pre>
+<code class="data">
+[
+    "ログイン",
+    "会員登録",
+    {
+        "企業情報": [
+            "ブログ",
+            "採用情報",
+            "会社紹介",
+            "ヘルプセンター"
+        ]
+    }
+]
+</code>
+</pre>
+
+        </td>
+        <td>
+
+<pre>
+<code class="data">
+[
+    "Log in",
+    "Sign up",
+    {
+        "Company": [
+            "Blog",
+            "Careers",
+            "Our story",
+            "Help Center"
+        ]
+    }
+]
+</code>
+</pre>
+
+        </td>
+        <td>
+
+<pre>
+<code class="data">
+[
+    "Connexion",
+    "Inscription des membres",
+    {
+        "Information d'entreprise": [
+            "Blog",
+            "Informations de recrutement",
+            "Présentation de l'entreprise",
+            "Centre d'aide"
+        ]
+    }
+]
+</code>
+</pre>
+
+        </td>
+        </tr>
+    
+        <tr>
+        <td>main.heroSentence</td>
+        <td>
+
+<pre>
+<code class="data">
+"一人ではすごいものは完成できない。"
+</code>
+</pre>
+
+        </td>
+        <td>
+
+<pre>
+<code class="data">
+"Nothing great is made alone."
+</code>
+</pre>
+
+        </td>
+        <td>
+
+<pre>
+<code class="data">
+"Une grande chose ne peut pas être complétée par vous-même."
+</code>
+</pre>
+
+        </td>
+        </tr>
+    
+        <tr>
+        <td>main.firstLevelComponent.secondLevelComponent</td>
+        <td>
+
+<pre>
+<code class="data">
+[
+    "ブレインストーミング",
+    "デザイン",
+    "ビルド"
+]
+</code>
+</pre>
+
+        </td>
+        <td>
+
+<pre>
+<code class="data">
+[
+    "Brainstorm",
+    "Design",
+    "Build"
+]
+</code>
+</pre>
+
+        </td>
+        <td>
+
+<pre>
+<code class="data">
+[
+    "réflexion",
+    "motif",
+    "Construire"
+]
+</code>
+</pre>
+
+        </td>
+        </tr>
     </tbody>
 </table>
 
