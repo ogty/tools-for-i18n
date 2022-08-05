@@ -241,7 +241,7 @@ class ReverseGenerator:
         file_name: str,
         directory: str,
         addtional_language: str = None,
-        automatic_translation: bool = None
+        automatic_translation: bool = None,
     ) -> None:
         """Initialize variables.
 
@@ -253,7 +253,7 @@ class ReverseGenerator:
         self.directory = directory
         self.file_name = file_name
         self.addtional_language = addtional_language
-        self.automatic_translation = False if automatic_translation is None else True
+        self.automatic_translation = False if not automatic_translation else True
 
         self.generated_data = ''
 
