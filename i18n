@@ -9,9 +9,17 @@ import re
 import sys
 from typing import Dict, List
 
+import jinja2
 import yaml
 
-from settings import INDENT, HELP_MESSAGE, CHARACTER_CODE, TABLE_TEMPLATE, EXPORT_FILE_NAME
+from settings import (
+    INDENT,
+    HELP_MESSAGE,
+    CHARACTER_CODE,
+    EXPORT_FILE_NAME,
+    FIRST_COLUMN_NAME,
+    TABLE_TEMPLATE_PATH,
+)
 
 
 RED = "\033[1;31m"
@@ -28,13 +36,11 @@ class LanguageSegmenter:
         base_data              (dict): Base translation data
         segmented_data         (dict): Segmented translation data
         breadcrumb_list        (list): Breadcrumb list
-        path_and_element_data  (list): Path and element data
     """
     languages = []
     base_data = {}
     segmented_data = {}
     breadcrumb_list = []
-    path_and_element_data = []
 
     def __init__(self, languages: List[str], import_file_name: str) -> None:
         """Initialization. Acquisition of translation data and storage in class variables.
@@ -93,36 +99,35 @@ class LanguageSegmenter:
 
     def generate_table(self) -> None:
         """Create a table from the segmented translation data"""
+        table_data = {}
         io = StringIO()
-        column_string = "</td><td>".join(list(map(lambda x: x.upper(), self.languages)))
-        template = TABLE_TEMPLATE.replace("---", column_string, 1)
-
-        html_data_string = ''
         for path in LanguageSegmenter.breadcrumb_list:
-            html_data_string += "<tr></tr><tr><td>\n\n```\n%s\n```\n\n</td>" % path
-
+            table_data[path] = {}
             for language in self.languages:
-                data = self._get_value(
+                data = segmenter._get_value(
                     path=path,
                     data=LanguageSegmenter.base_data,
                     language=language,
                 )
-                # Convert and format Python objects to json format data
                 json.dump(obj=data, fp=io, indent=INDENT, ensure_ascii=False)
-                string_data = io.getvalue()  # Get converted json format data
+                string_data = io.getvalue()
+                table_data[path][language] = string_data
 
-                # Stores breadcrumb lists and corresponding data
-                path_and_data = ("%s.%s" % (path, language.lower()), string_data)
-                LanguageSegmenter.path_and_element_data.append(path_and_data)
+                io.truncate(0)
+                io.seek(0)
 
-                html_data_string += "<td>\n\n```js\n%s\n```\n\n</td>" % string_data
-                io.truncate(0)  # Reset data
-                io.seek(0)      # Reset position
-
-            html_data_string += "</tr>"
-
-        self.string_table = template.replace("---", html_data_string)
         io.close()
+        data_for_template = {
+            "languages": self.languages,
+            "columns": [FIRST_COLUMN_NAME] + self.languages,
+            "data": table_data,
+        }
+        environment = jinja2.Environment(
+            loader=jinja2.FileSystemLoader('.', encoding=CHARACTER_CODE)
+        )
+        template = environment.get_template(TABLE_TEMPLATE_PATH)
+        html_table = template.render(data_for_template)
+        self.string_table = html_table
 
     def output_table(self) -> None:
         """Output a table."""

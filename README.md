@@ -50,7 +50,7 @@ $ i18n revgene -d ./sample/public/locales -f translations.json -o i18n.yaml
 **Output translation files to a file as a table**
 
 ```zsh
-$ i18n table ./sample/public/locales/i18n.yaml -l ja en -o i18n.md
+$ i18n table -f ./sample/public/locales/i18n.yaml -l ja en -o i18n.md
 ```
 
 **Add new languages to the translation file and output as a table**
