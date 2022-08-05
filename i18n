@@ -10,6 +10,7 @@ import sys
 from typing import Dict, List
 
 import jinja2
+from googletrans import Translator
 import yaml
 
 from settings import (
@@ -235,7 +236,13 @@ class LanguageSegmenter:
 class ReverseGenerator:
     """Reverse generated class from Json file"""
 
-    def __init__(self, file_name: str, directory: str, addtional_language: str = None) -> None:
+    def __init__(
+        self,
+        file_name: str,
+        directory: str,
+        addtional_language: str = None,
+        automatic_translation: bool = None
+    ) -> None:
         """Initialize variables.
 
         Args:
@@ -246,6 +253,7 @@ class ReverseGenerator:
         self.directory = directory
         self.file_name = file_name
         self.addtional_language = addtional_language
+        self.automatic_translation = False if automatic_translation is None else True
 
         self.generated_data = ''
 
@@ -300,6 +308,7 @@ class ReverseGenerator:
         Returns:
             List[tuple]: Sorted data
         """
+        translator = Translator()
         sorted_path_and_element = []
         base_paths, path_and_element_array = self._generate_data()
 
@@ -318,7 +327,17 @@ class ReverseGenerator:
                         match = re.search(r'"(.*)"', line)
                         if match is None:
                             continue
-                        element = element.replace(match.group(1), '')
+
+                        string_to_be_replaced = match.group(1)
+                        # TODO: Add a process to exclude paths you do not want translated
+                        if self.automatic_translation:
+                            translated_data = translator.translate(
+                                text=string_to_be_replaced,
+                                dest=self.addtional_language,
+                            ).text
+                            element = element.replace(string_to_be_replaced, translated_data)
+                        else:
+                            element = element.replace(string_to_be_replaced, '')
 
                     path = "%s.%s" % ('.'.join(path.split('.')[:-1]), self.addtional_language)
                     sorted_path_and_element.append((path, element))
@@ -398,6 +417,7 @@ if __name__ == "__main__":
         print(HELP_MESSAGE)
         sys.exit(0)
 
+    # TODO: Add description and help
     parser = argparse.ArgumentParser(description='')
     subparsers = parser.add_subparsers()
 
@@ -414,6 +434,7 @@ if __name__ == "__main__":
     revgene.add_argument("--output", "-o", type=str, help='')
     revgene.add_argument("--directory", "-d", type=str, help='')
     revgene.add_argument("--addtional_language", "-al", type=str, help='')
+    revgene.add_argument("--automatic_translation", "-at", action="store_true", help='')
     revgene.set_defaults(handler=RecursionError)
 
     # Table Command
@@ -441,20 +462,16 @@ if __name__ == "__main__":
 
     # Reverse Generation Command
     if sys.argv[1] == "revgene":
-        file = args.file
-        directory = args.directory
-        output_file_name = args.output
-        addtional_language = args.addtional_language
-
         reverse_generator = ReverseGenerator(
-            file_name=file,
-            directory=directory,
-            addtional_language=addtional_language,
+            file_name=args.file,
+            directory=args.directory,
+            addtional_language=args.addtional_language,
+            automatic_translation=args.automatic_translation,
         )
         reverse_generator()
 
-        if output_file_name:
-            reverse_generator.write(output_file_name)
+        if args.output:
+            reverse_generator.write(args.output)
 
         exit(0)
 

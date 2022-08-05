@@ -1,34 +1,34 @@
 <h1 align="center">Tools for Internationalization</h1>
 
-## 🎈 Feature
+## 🎈 機能
 
-- ✅ Segment translation files into their respective languages
-- ✅ Restoring a segmented translation file back to its original file
-- ✅ Automatic translation of additional language
+- ✅ 翻訳ファイルをそれぞれの言語に分割
+- ✅ 分割した翻訳ファイルを元のファイルに戻す
+- ✅ 追加言語の自動翻訳
 
-## ⚙️ Setup
+## ⚙️ セットアップ
 
 ```zsh
 $ git clone https://github.com/ogty/tools-for-internationalization
 $ source ./tools-for-internationalization/setup.sh # or make
 ```
 
-## 📖 Usage
+## 📖 使い方
 
 ```
 $ i18n <commands> [options]
 ```
 
-## 🤖 Commands
+## 🤖 コマンド
 
-| Command   | Description                                                             |
-| --------- | ----------------------------------------------------------------------- |
-| `segment` | Commands to segment translation files into their respective languages   |
-| `revgene` | Command to convert a segmented translation file into a yaml file        |
-| `table`   | Command to create a table from segmented translation data               |
-| `help`    | Commands to display usage, etc.                                         |
+| コマンド   | 説明                                              |
+| --------- | ------------------------------------------------ |
+| `segment` | 翻訳ファイルを各言語に分割するコマンド                 |
+| `revgene` | 分割された翻訳ファイルを yaml ファイルに変換するコマンド |
+| `table`   | 分割された翻訳データから表を作成するコマンド            |
+| `help`    | 使い方などを表示するコマンド                          |
 
-## 🔍 Options
+## 🔍 オプション
 
 | Name                           | Argument           | Commands                |
 | ------------------------------ | ------------------ | ----------------------- |
@@ -40,27 +40,27 @@ $ i18n <commands> [options]
 | `-at, --automatic_translation` | -                  | revgene                 |
 | `-s, --show`                   | -                  | table                   |
 
-## ✏️ Example
+## ✏️ 例
 
-**Segment the translation file into each language**
+**翻訳ファイルを各言語に分割する**
 
 ```zsh
 $ i18n segment -f ./sample/public/locales/i18n.yaml -l ja en -o ./sample/public/locales
 ```
 
-**Generate the original translation file (yaml) from the segmented translation file (json)**
+**分割された翻訳ファイル(json)から元の翻訳ファイル(yaml)を生成する**
 
 ```zsh
 $ i18n revgene -d ./sample/public/locales -f translations.json -o i18n.yaml
 ```
 
-**Output translation files to a file as a table**
+**翻訳ファイルを表としてファイルに出力する**
 
 ```zsh
 $ i18n table -f ./sample/public/locales/i18n.yaml -l ja en -o i18n.md
 ```
 
-**Add new languages to the translation file and output as a table**
+**翻訳ファイルに新しい言語を追加し、表として出力する**
 
 ```zsh
 $ i18n revgene -d ./sample/public/locales -f translations.json -al fr -o i18n.yaml && \
