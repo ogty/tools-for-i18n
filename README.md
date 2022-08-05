@@ -69,4 +69,6 @@ $ i18n revgene -d ./sample/public/locales -f translations.json -al fr -o i18n.ya
 
 ## 🖨️ Output
 
+**`./sample/index.html`**
+
 ![](./sample/images/table.png)
