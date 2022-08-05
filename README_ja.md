@@ -6,7 +6,7 @@
 - ✅ 分割した翻訳ファイルを元のファイルに戻す
 - ✅ 追加言語の自動翻訳
 
-## ⚙️ セットアップ
+## ⚙️ 設定
 
 ```zsh
 $ git clone https://github.com/ogty/tools-for-internationalization
