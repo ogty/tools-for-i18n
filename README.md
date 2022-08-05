@@ -19,6 +19,9 @@ $ source ./tools-for-internationalization/setup.sh # or make
 $ i18n <commands> [options]
 ```
 
+> **Note**  
+> To change the output format of the table, you need to replace the commented out variables in `settings.py`.
+
 ## 🤖 Commands
 
 | Command   | Description                                                             |
@@ -72,3 +75,6 @@ $ i18n revgene -d ./sample/public/locales -f translations.json -al fr -o i18n.ya
 **`./sample/index.html`**
 
 ![](./sample/images/table.png)
+
+> **Note**  
+> If you want to change the design of the output table, please modify the `templates/html.tpl` file
