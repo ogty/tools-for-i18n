@@ -1,3 +1,6 @@
+import os
+
+
 HELP_MESSAGE = """
 Usage:
 
@@ -48,6 +51,7 @@ Example:
           i18n table -f ./sample/public/locales/i18n.yaml -l ja en empty
 """
 INDENT = 4
+TOP_DIR = os.path.dirname(os.path.abspath(__file__))
 CHARACTER_CODE = "utf-8"
 EMPTY_DATA_NAME = "EMPTY"
 EXPORT_FILE_NAME = "translations.json"
