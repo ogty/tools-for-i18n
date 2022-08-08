@@ -65,7 +65,7 @@
         background-color: #22262f;
     }
     .string {
-        color: #8DDB8C;
+        color: #96D0FF;
     }
     .number {
         color: #6CB6FF;
@@ -77,7 +77,7 @@
         color: #6CB6FF;
     }
     .key {
-        color: #96D0FF;
+        color: #8DDB8C;
     }
 </style>
 
