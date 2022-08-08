@@ -103,6 +103,10 @@
             } else if (/null/.test(match)) {
                 clss_name = 'null';
             }
+
+            if (match.indexOf(':') !== -1) {
+                return `<span class="${clss_name}">${match.replace(':', '')}</span>:`;
+            }
             return `<span class="${clss_name}">${match}</span>`;
         });
     }
