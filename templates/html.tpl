@@ -91,23 +91,22 @@
     function syntaxHighlight(json) {
         json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
         return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-            let clss_name = 'number';
+            let className = 'number';
             if (/^"/.test(match)) {
                 if (/:$/.test(match)) {
-                    clss_name = 'key';
+                    className = 'key';
                 } else {
-                    clss_name = 'string';
+                    className = 'string';
                 }
             } else if (/true|false/.test(match)) {
-                clss_name = 'boolean';
+                className = 'boolean';
             } else if (/null/.test(match)) {
-                clss_name = 'null';
+                className = 'null';
             }
-
             if (/:/.test(match)) {
-                return `<span class="${clss_name}">${match.replace(':', '')}</span>:`;
+                return `<span class="${className}">${match.replace(':', '')}</span>:`;
             }
-            return `<span class="${clss_name}">${match}</span>`;
+            return `<span class="${className}">${match}</span>`;
         });
     }
 </script>
